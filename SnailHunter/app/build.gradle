@@ -2,8 +2,8 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'pers.wengzc.snailHunter'
 
-snailHunter.timeCriterion = 300
-snailHunter.huntInMainThread = false
+snailHunter.timeCriterion = 200
+//snailHunter.huntInMainThread = false
 
 android {
     compileSdkVersion 27
