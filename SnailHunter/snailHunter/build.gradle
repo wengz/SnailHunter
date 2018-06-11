@@ -1,0 +1,40 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+repositories {
+    jcenter()
+    google()
+    maven{
+        url uri('D:/local_repo')
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+dependencies {
+    implementation gradleApi()
+    implementation 'com.android.tools.build:gradle:3.1.0'
+    implementation 'commons-io:commons-io:2.4'
+    implementation 'org.ow2.asm:asm:6.1'
+    implementation 'org.ow2.asm:asm-commons:6.1'
+    implementation 'org.ow2.asm:asm-tree:6.1'
+    implementation 'org.ow2.asm:asm-util:6.1'
+    implementation group: 'commons-codec', name: 'commons-codec', version: '1.9'
+    implementation 'com.google.android:android:4.1.1.4'
+    implementation 'com.squareup:javawriter:2.5.1'
+    implementation 'pers.wengzc:hunterpackage:0.0.1'
+}
+
+
+group = 'pers.wengzc'
+version = '0.0.1'
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            repository(url: uri('D:/local_repo'))
+        }
+    }
+}
+
