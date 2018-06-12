@@ -9,7 +9,8 @@ import android.widget.Button;
 
 import java.util.Random;
 
-import pers.wengzc.hunterpackage.Examine;
+import pers.wengzc.hunterKit.Examine;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
 
         btnUi.setOnClickListener(new View.OnClickListener() {
 
-            @Examine
             @Override
             public void onClick(View view) {
                 try{

@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'pers.wengzc.snailHunter'
 
-snailHunter.timeCriterion = 200
+//snailHunter.timeCriterion = 200
 //snailHunter.huntInMainThread = false
 
 android {
@@ -28,12 +28,18 @@ android {
     }
 }
 
+repositories {
+    maven{
+        url uri('D:/local_repo')
+    }
+}
+
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:27.1.1'
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'pers.wengzc:hunterpackage:0.0.1'
+    implementation 'pers.wengzc:hunterKit:0.0.1'
 }

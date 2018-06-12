@@ -42,7 +42,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import pers.wengzc.hunterpackage.Examine;
+import pers.wengzc.hunterKit.AndroidUtil;
+import pers.wengzc.hunterKit.ExamineMethodRunTime;
 
 public class MyTransform extends Transform{
 
@@ -136,7 +137,7 @@ public class MyTransform extends Transform{
         }
     }
 
-    private static final String util_class_name = "pers/wengzc/AndroidUtil";
+    private static final String util_class_name = Type.getInternalName(AndroidUtil.class);
 
     private void transformMethod (MethodNode mnd, ClassNode cn) {
 
@@ -148,9 +149,8 @@ public class MyTransform extends Transform{
         List<AnnotationNode>annos = mnd.invisibleAnnotations;
         if (annos != null && annos.size() > 0){
             for (AnnotationNode anno : annos){
-                if (Type.getDescriptor(Examine.class).equals(anno.desc)){
+                if (Type.getDescriptor(ExamineMethodRunTime.class).equals(anno.desc)){
                     examineMethod = true;
-                    System.out.println("有 Examine 注解");
                 }
             }
         }

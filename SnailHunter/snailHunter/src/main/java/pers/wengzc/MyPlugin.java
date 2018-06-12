@@ -35,7 +35,6 @@ public class MyPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         try{
-
             //将transform接口实现绑定到androidPlugin 实现class文件字节码操作
             BaseExtension androidExtension = (BaseExtension) project.getExtensions().getByName("android");
             MyTransform myTransform = new MyTransform();
