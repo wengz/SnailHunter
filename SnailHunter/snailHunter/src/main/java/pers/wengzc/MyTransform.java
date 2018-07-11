@@ -110,6 +110,7 @@ public class MyTransform extends Transform{
 
     private void transformClass (String classFilePath) {
         try{
+            //System.out.println("---- transformClass ------ classFilePath="+classFilePath);
             FileInputStream fileInputStream = new FileInputStream(classFilePath);
             ClassReader classReader = new ClassReader(fileInputStream);
             ClassNode classNode = new ClassNode();

@@ -31,6 +31,7 @@ public class MyPlugin implements Plugin<Project> {
     private static final String PreBuildTaskName = "preBuild";
     private static final String JavaGenerateTaskName = "SnailHunterJavaGenerateTask";
     private static final String JavaGenerateDir = "/SnailHunterGenerate";
+    private static final String MainModuleName = "app";
 
     @Override
     public void apply(Project project) {
@@ -44,28 +45,32 @@ public class MyPlugin implements Plugin<Project> {
             ScriptConfigVal configVal = project.getExtensions().create("snailHunter", ScriptConfigVal.class);
             myTransform.setConfigVal(configVal);
 
-            //工具类java文件生成任务创建，并将其绑定到preBuild任务之前
-            File buildDir = project.getBuildDir();
-            project.getTasks().create(JavaGenerateTaskName, GenerateTask.class, new Action<GenerateTask>() {
-                @Override
-                public void execute(GenerateTask generateTask) {}
-            });
-            GenerateTask generateTask = (GenerateTask) project.getTasks().getByName(JavaGenerateTaskName);
-            File myGenerateDir = new File(buildDir, JavaGenerateDir);
-            generateTask.setGenerateDir(myGenerateDir);
+            //工具类只在主工程中生成
+            if (MainModuleName.equals(project.getName())){
+                //工具类java文件生成任务创建，并将其绑定到preBuild任务之前
+                File buildDir = project.getBuildDir();
+                project.getTasks().create(JavaGenerateTaskName, GenerateTask.class, new Action<GenerateTask>() {
+                    @Override
+                    public void execute(GenerateTask generateTask) {}
+                });
 
-            Task preBuildTask = project.getTasks().getByName(PreBuildTaskName);
-            preBuildTask.dependsOn(generateTask);
+                GenerateTask generateTask = (GenerateTask) project.getTasks().getByName(JavaGenerateTaskName);
+                File myGenerateDir = new File(buildDir, JavaGenerateDir);
+                generateTask.setGenerateDir(myGenerateDir);
 
-            //将java生成文件所在的目录加入项目源码编译路径
-            androidExtension.sourceSets(new Action<NamedDomainObjectContainer<AndroidSourceSet>>() {
-                @Override
-                public void execute(NamedDomainObjectContainer<AndroidSourceSet> androidSourceSets) {
-                    DefaultAndroidSourceSet defaultAndroidSourceSet = (com.android.build.gradle.internal.api.DefaultAndroidSourceSet) androidSourceSets.maybeCreate("main");
-                    AndroidSourceDirectorySet androidSourceDirectorySet = defaultAndroidSourceSet.getJava();
-                    androidSourceDirectorySet.srcDir(myGenerateDir);
-                }
-            });
+                Task preBuildTask = project.getTasks().getByName(PreBuildTaskName);
+                preBuildTask.dependsOn(generateTask);
+
+                //将java生成文件所在的目录加入项目源码编译路径
+                androidExtension.sourceSets(new Action<NamedDomainObjectContainer<AndroidSourceSet>>() {
+                    @Override
+                    public void execute(NamedDomainObjectContainer<AndroidSourceSet> androidSourceSets) {
+                        DefaultAndroidSourceSet defaultAndroidSourceSet = (com.android.build.gradle.internal.api.DefaultAndroidSourceSet) androidSourceSets.maybeCreate("main");
+                        AndroidSourceDirectorySet androidSourceDirectorySet = defaultAndroidSourceSet.getJava();
+                        androidSourceDirectorySet.srcDir(myGenerateDir);
+                    }
+                });
+            }
 
         }catch (Exception e){
             System.out.println("MyPlugin apply(Project project),e="+e);

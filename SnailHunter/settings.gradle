@@ -1,1 +1,1 @@
-include ':app', ':snailHunter', ':hunterKit'
+include ':app', ':snailHunter', ':hunterKit', ':testlib'
