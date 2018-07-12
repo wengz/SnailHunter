@@ -22,6 +22,7 @@ dependencies {
     implementation 'org.ow2.asm:asm-commons:6.1'
     implementation 'org.ow2.asm:asm-tree:6.1'
     implementation 'org.ow2.asm:asm-util:6.1'
+    implementation 'org.javassist:javassist:3.20.0-GA'
     implementation 'commons-codec:commons-codec:1.9'
     implementation 'com.google.android:android:4.1.1.4'
     implementation 'com.squareup:javawriter:2.5.1'

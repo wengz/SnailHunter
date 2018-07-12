@@ -9,10 +9,14 @@ import com.android.build.api.transform.TransformException;
 import com.android.build.api.transform.TransformInput;
 import com.android.build.api.transform.TransformInvocation;
 import com.android.build.api.transform.TransformOutputProvider;
+import com.android.build.gradle.BaseExtension;
+import com.android.build.gradle.internal.pipeline.TransformManager;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
 
 import org.apache.commons.io.FileUtils;
+import org.gradle.api.Plugin;
+import org.gradle.api.Project;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -41,13 +45,25 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.jar.JarOutputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
+import javassist.ClassPool;
+import javassist.CtClass;
+import javassist.bytecode.AccessFlag;
 import pers.wengzc.hunterKit.AndroidUtil;
 import pers.wengzc.hunterKit.ExamineMethodRunTime;
 
 public class MyTransform extends Transform{
 
+    private Project project;
+
     private ScriptConfigVal configVal;
+
+    public MyTransform(Project project){
+        this.project = project;
+    }
 
     @Override
     public String getName() {
@@ -56,12 +72,12 @@ public class MyTransform extends Transform{
 
     @Override
     public Set<QualifiedContent.ContentType> getInputTypes() {
-        return ImmutableSet.of(QualifiedContent.DefaultContentType.CLASSES);
+        return TransformManager.CONTENT_CLASS;
     }
 
     @Override
     public Set<? super QualifiedContent.Scope> getScopes() {
-        return Sets.immutableEnumSet(QualifiedContent.Scope.PROJECT);
+        return TransformManager.SCOPE_FULL_PROJECT;
     }
 
     @Override
@@ -73,29 +89,106 @@ public class MyTransform extends Transform{
     @Override
     public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
 
-        Collection<TransformInput> inputs = transformInvocation.getInputs();
-        TransformOutputProvider transformOutputProvider = transformInvocation.getOutputProvider();
+        try{
+            Collection<TransformInput> inputs = transformInvocation.getInputs();
+            TransformOutputProvider transformOutputProvider = transformInvocation.getOutputProvider();
 
-        for (TransformInput input : inputs){
+            transformOutputProvider.deleteAll();
+            File jarFile = transformOutputProvider.getContentLocation("main", getOutputTypes(), getScopes(), Format.JAR);
 
-            Collection<DirectoryInput> directoryInputs = input.getDirectoryInputs();
-            for (DirectoryInput directoryInput : directoryInputs){
-
-                File file = directoryInput.getFile();
-                recursiveTransform(file);
-                File dir = transformOutputProvider.getContentLocation(directoryInput.getName(), directoryInput.getContentTypes(),
-                        directoryInput.getScopes(), Format.DIRECTORY);
-                FileUtils.copyDirectory(directoryInput.getFile(), dir);
+            if (!jarFile.getParentFile().exists()){
+                jarFile.getParentFile().mkdirs();
+            }
+            if (jarFile.exists()){
+                jarFile.delete();
             }
 
-            Collection<JarInput> jarInputs = input.getJarInputs();
-            for (JarInput jarInput : jarInputs){
-                File newJarFile = transformOutputProvider.getContentLocation(jarInput.getName(), jarInput.getContentTypes(),
-                        jarInput.getScopes(), Format.JAR);
-                FileUtils.copyFile(jarInput.getFile(), newJarFile);
+            ClassPool classPool = new ClassPool();
+            BaseExtension androidExtension = (BaseExtension) project.getExtensions().getByName("android");
+            List<File> bootClassPath = androidExtension.getBootClasspath();
+            for (File file : bootClassPath){
+                System.out.println("boot class path="+file.getAbsolutePath());
+                try{
+                    classPool.appendClassPath(file.getAbsolutePath());
+                }catch (Exception e){
+                    System.out.println("boot class path append fail");
+                    e.printStackTrace();
+                }
             }
+
+            List<CtClass> box = ConvertUtil.toCtClasses(inputs, classPool);
+            insertCode(box, jarFile);
+
+        }catch ( Exception e ){
+            e.printStackTrace();
         }
     }
+
+    private void insertCode (List<CtClass> box, File jarFile) throws Exception {
+        ZipOutputStream outputStream = new JarOutputStream(new FileOutputStream(jarFile));
+        for (CtClass ctClass : box){
+            ctClass.setModifiers(AccessFlag.setPublic(ctClass.getModifiers()));
+            if (
+                    isNeedInsertClass(ctClass.getName())
+                    &&
+                    !( ctClass.isInterface() || ctClass.getDeclaredMethods().length < 1 )){
+                zipFile(transformCode(ctClass.toBytecode(), ctClass.getName().replaceAll("\\.", "/")), outputStream, ctClass.getName().replaceAll("\\.", "/") + ".class");
+            }else{
+                zipFile(ctClass.toBytecode(), outputStream, ctClass.getName().replaceAll("\\.", "/") + ".class");
+            }
+        }
+        outputStream.close();
+    }
+
+    private boolean isNeedInsertClass(String className) {
+        if (className.contains("AndroidUtil")){
+            return false;
+        }
+
+        return true;
+//        if (className.contains("snailhunter")){
+//            System.out.println("------- isNeedInsertClass -------->>>"+className);
+//            return true;
+//        }
+//        return false;
+    }
+
+    private void zipFile (byte[] classBytesArray, ZipOutputStream zos, String entryName){
+        try{
+            ZipEntry entry = new ZipEntry(entryName);
+            zos.putNextEntry(entry);
+            zos.write(classBytesArray, 0, classBytesArray.length);
+            zos.closeEntry();;
+            zos.flush();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private byte[] transformCode (byte[] bs, String className)throws Exception{
+        try{
+            ClassReader classReader = new ClassReader(bs);
+            ClassNode classNode = new ClassNode();
+            classReader.accept(classNode, 0);
+
+            Iterator<MethodNode> it = classNode.methods.iterator();
+            while (it.hasNext()){
+                MethodNode mnd = it.next();
+                transformMethod(mnd, classNode);
+            }
+
+            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+            classNode.accept(cw);
+            byte[] b = cw.toByteArray();
+            return b;
+        }catch (Exception e){
+            System.out.println("class文件"+className+"修改失败,exception="+e);
+            e.printStackTrace();
+        }
+        return bs;
+    }
+
+
 
     private void recursiveTransform (File file){
         if (file.isDirectory()){
@@ -109,6 +202,7 @@ public class MyTransform extends Transform{
     }
 
     private void transformClass (String classFilePath) {
+        String className = "";
         try{
             //System.out.println("---- transformClass ------ classFilePath="+classFilePath);
             FileInputStream fileInputStream = new FileInputStream(classFilePath);
@@ -116,7 +210,7 @@ public class MyTransform extends Transform{
             ClassNode classNode = new ClassNode();
             classReader.accept(classNode, 0);
 
-            String className = classNode.name;
+            className = classNode.name;
             if (util_class_name.equals(className)){
                 return;
             }
@@ -134,7 +228,8 @@ public class MyTransform extends Transform{
             fileOutputStream.write(b, 0, b.length);
             fileOutputStream.close();
         }catch (Exception e){
-            System.out.println("class文件修改失败,exception="+e);
+            System.out.println("class文件"+className+"修改失败,exception="+e);
+            e.printStackTrace();
         }
     }
 
@@ -162,6 +257,10 @@ public class MyTransform extends Transform{
         }
 
         InsnList insnList = mnd.instructions;
+
+        if (insnList.size() < 1){
+            return;
+        }
 
         InsnList codeInsertStart = new InsnList();
         codeInsertStart.add(new LdcInsnNode(0L));
@@ -261,4 +360,5 @@ public class MyTransform extends Transform{
     public void setConfigVal(ScriptConfigVal configVal) {
         this.configVal = configVal;
     }
+
 }

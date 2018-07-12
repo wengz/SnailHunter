@@ -1,10 +1,5 @@
 apply plugin: 'com.android.library'
 
-apply plugin: 'pers.wengzc.snailHunter'
-
-//snailHunter.timeCriterion = 200
-snailHunter.huntInMainThread = false
-
 android {
     compileSdkVersion 27
 

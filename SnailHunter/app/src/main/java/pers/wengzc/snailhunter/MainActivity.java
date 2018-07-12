@@ -9,6 +9,7 @@ import android.view.ViewDebug;
 import android.widget.Button;
 
 import com.example.testlib.LibActivity;
+import com.example.testlib.LibSuperClass;
 
 import java.util.Random;
 
@@ -20,6 +21,11 @@ public class MainActivity extends AppCompatActivity {
     private Button btnUi;
     private Button btnNotUi;
 
+
+    public static class MainSubClass{
+
+        String str = "MainSubClass";
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +58,9 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         try{
+                            MainSubClass mainSubClass = new MainSubClass();
+                            System.out.println(""+mainSubClass.str);
+
                             sleepAWhile();
                         }catch (Exception e){}
 

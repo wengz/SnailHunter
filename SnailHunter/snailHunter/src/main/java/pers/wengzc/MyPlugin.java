@@ -38,7 +38,7 @@ public class MyPlugin implements Plugin<Project> {
         try{
             //将transform接口实现绑定到androidPlugin 实现class文件字节码操作
             BaseExtension androidExtension = (BaseExtension) project.getExtensions().getByName("android");
-            MyTransform myTransform = new MyTransform();
+            MyTransform myTransform = new MyTransform(project);
             androidExtension.registerTransform(myTransform);
 
             //配置值对象
@@ -46,7 +46,7 @@ public class MyPlugin implements Plugin<Project> {
             myTransform.setConfigVal(configVal);
 
             //工具类只在主工程中生成
-            if (MainModuleName.equals(project.getName())){
+            //if (MainModuleName.equals(project.getName())){
                 //工具类java文件生成任务创建，并将其绑定到preBuild任务之前
                 File buildDir = project.getBuildDir();
                 project.getTasks().create(JavaGenerateTaskName, GenerateTask.class, new Action<GenerateTask>() {
@@ -70,7 +70,7 @@ public class MyPlugin implements Plugin<Project> {
                         androidSourceDirectorySet.srcDir(myGenerateDir);
                     }
                 });
-            }
+            //}
 
         }catch (Exception e){
             System.out.println("MyPlugin apply(Project project),e="+e);
