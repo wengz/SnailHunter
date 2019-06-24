@@ -16,4 +16,6 @@ public @interface HunterTarget {
 
     boolean inherited();
 
+    Action action();
+
 }

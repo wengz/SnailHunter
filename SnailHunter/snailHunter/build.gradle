@@ -26,7 +26,7 @@ dependencies {
     implementation 'commons-codec:commons-codec:1.9'
     implementation 'com.google.android:android:4.1.1.4'
     implementation 'com.squareup:javawriter:2.5.1'
-    implementation 'pers.wengzc:hunterKit:0.0.1'
+    implementation 'pers.wengzc:hunterKit:0.0.2'
     implementation 'com.alibaba:fastjson:1.1.71.android'
 }
 

@@ -17,6 +17,7 @@ import com.google.common.collect.Sets;
 import org.apache.commons.io.FileUtils;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.internal.impldep.org.testng.internal.annotations.AnnotationHelper;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -53,6 +54,7 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.bytecode.AccessFlag;
+import pers.wengzc.hunterKit.Action;
 import pers.wengzc.hunterKit.AndroidUtil;
 import pers.wengzc.hunterKit.ExamineMethodRunTime;
 
@@ -111,16 +113,15 @@ public class MyTransform extends Transform{
             BaseExtension androidExtension = (BaseExtension) project.getExtensions().getByName("android");
             List<File> bootClassPath = androidExtension.getBootClasspath();
             for (File file : bootClassPath){
-                //System.out.println("boot class path="+file.getAbsolutePath());
                 try{
                     classPool.appendClassPath(file.getAbsolutePath());
                 }catch (Exception e){
-                    //System.out.println("boot class path append fail");
                     e.printStackTrace();
                 }
             }
 
             List<CtClass> box = ConvertUtil.toCtClasses(inputs, classPool);
+            AnnotationConfigHelper.cp = classPool;
             insertCode(box, jarFile);
 
         }catch ( Exception e ){
@@ -132,18 +133,12 @@ public class MyTransform extends Transform{
         ZipOutputStream outputStream = new JarOutputStream(new FileOutputStream(jarFile));
         for (CtClass ctClass : box){
             ctClass.setModifiers(AccessFlag.setPublic(ctClass.getModifiers()));
-
             if (
                     isNeedInsertClass(ctClass.getName())
                     &&
                     !( ctClass.isInterface() || ctClass.getDeclaredMethods().length < 1 )
             ){
-                CtMethod[] ms = ctClass.getDeclaredMethods();
-                if (ms != null){
-                    for (CtMethod cm : ms){
-                        System.out.println("ctmethod signature="+cm.getSignature());
-                    }
-                }
+
                 zipFile(transformCode(ctClass.toBytecode(), ctClass.getName().replaceAll("\\.", "/")), outputStream, ctClass.getName().replaceAll("\\.", "/") + ".class");
             }else{
                 zipFile(ctClass.toBytecode(), outputStream, ctClass.getName().replaceAll("\\.", "/") + ".class");
@@ -160,13 +155,7 @@ public class MyTransform extends Transform{
         if (className.contains("ViewMethodSignature")){
             return true;
         }
-
         return false;
-//        if (className.contains("snailhunter")){
-//            System.out.println("------- isNeedInsertClass -------->>>"+className);
-//            return true;
-//        }
-//        return false;
     }
 
     private void zipFile (byte[] classBytesArray, ZipOutputStream zos, String entryName){
@@ -187,11 +176,18 @@ public class MyTransform extends Transform{
             ClassNode classNode = new ClassNode();
             classReader.accept(classNode, 0);
 
+            List<MethodConfig> classMethodConfig = AnnotationConfigHelper.getClassSelfMethodConfig(className);
             Iterator<MethodNode> it = classNode.methods.iterator();
             while (it.hasNext()){
                 MethodNode mnd = it.next();
-                System.out.println("转化方法 name="+mnd.name+" signature="+mnd.signature +" desc="+mnd.desc);
-                transformMethod(mnd, classNode);
+                for (MethodConfig mc : classMethodConfig){
+                    if (mc.match(mnd)){
+                        if (mc.config.action != Action.Exclude){
+                            transformMethod(mnd, classNode);
+                        }
+                        break;
+                    }
+                }
             }
 
             ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
@@ -199,7 +195,6 @@ public class MyTransform extends Transform{
             byte[] b = cw.toByteArray();
             return b;
         }catch (Exception e){
-            System.out.println("class文件"+className+"修改失败,exception="+e);
             e.printStackTrace();
         }
         return bs;
