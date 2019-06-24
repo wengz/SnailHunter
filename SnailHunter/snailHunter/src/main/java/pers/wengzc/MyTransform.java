@@ -51,6 +51,7 @@ import java.util.zip.ZipOutputStream;
 
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtMethod;
 import javassist.bytecode.AccessFlag;
 import pers.wengzc.hunterKit.AndroidUtil;
 import pers.wengzc.hunterKit.ExamineMethodRunTime;
@@ -90,6 +91,9 @@ public class MyTransform extends Transform{
     public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
 
         try{
+            configVal.adjuestInternal();
+            System.out.println(configVal.toString());
+
             Collection<TransformInput> inputs = transformInvocation.getInputs();
             TransformOutputProvider transformOutputProvider = transformInvocation.getOutputProvider();
 
@@ -107,11 +111,11 @@ public class MyTransform extends Transform{
             BaseExtension androidExtension = (BaseExtension) project.getExtensions().getByName("android");
             List<File> bootClassPath = androidExtension.getBootClasspath();
             for (File file : bootClassPath){
-                System.out.println("boot class path="+file.getAbsolutePath());
+                //System.out.println("boot class path="+file.getAbsolutePath());
                 try{
                     classPool.appendClassPath(file.getAbsolutePath());
                 }catch (Exception e){
-                    System.out.println("boot class path append fail");
+                    //System.out.println("boot class path append fail");
                     e.printStackTrace();
                 }
             }
@@ -128,10 +132,18 @@ public class MyTransform extends Transform{
         ZipOutputStream outputStream = new JarOutputStream(new FileOutputStream(jarFile));
         for (CtClass ctClass : box){
             ctClass.setModifiers(AccessFlag.setPublic(ctClass.getModifiers()));
+
             if (
                     isNeedInsertClass(ctClass.getName())
                     &&
-                    !( ctClass.isInterface() || ctClass.getDeclaredMethods().length < 1 )){
+                    !( ctClass.isInterface() || ctClass.getDeclaredMethods().length < 1 )
+            ){
+                CtMethod[] ms = ctClass.getDeclaredMethods();
+                if (ms != null){
+                    for (CtMethod cm : ms){
+                        System.out.println("ctmethod signature="+cm.getSignature());
+                    }
+                }
                 zipFile(transformCode(ctClass.toBytecode(), ctClass.getName().replaceAll("\\.", "/")), outputStream, ctClass.getName().replaceAll("\\.", "/") + ".class");
             }else{
                 zipFile(ctClass.toBytecode(), outputStream, ctClass.getName().replaceAll("\\.", "/") + ".class");
@@ -145,7 +157,11 @@ public class MyTransform extends Transform{
             return false;
         }
 
-        return true;
+        if (className.contains("ViewMethodSignature")){
+            return true;
+        }
+
+        return false;
 //        if (className.contains("snailhunter")){
 //            System.out.println("------- isNeedInsertClass -------->>>"+className);
 //            return true;
@@ -174,6 +190,7 @@ public class MyTransform extends Transform{
             Iterator<MethodNode> it = classNode.methods.iterator();
             while (it.hasNext()){
                 MethodNode mnd = it.next();
+                System.out.println("转化方法 name="+mnd.name+" signature="+mnd.signature +" desc="+mnd.desc);
                 transformMethod(mnd, classNode);
             }
 
@@ -237,117 +254,117 @@ public class MyTransform extends Transform{
 
     private void transformMethod (MethodNode mnd, ClassNode cn) {
 
-        int orgLocalVarSize = mnd.maxLocals;
-        String methodName = mnd.name;
-        String className = cn.name;
-
-        boolean examineMethod = false;
-        List<AnnotationNode>annos = mnd.invisibleAnnotations;
-        if (annos != null && annos.size() > 0){
-            for (AnnotationNode anno : annos){
-                if (Type.getDescriptor(ExamineMethodRunTime.class).equals(anno.desc)){
-                    examineMethod = true;
-                }
-            }
-        }
-
-        //没有函数注解，没有开启主线程追踪无需注入代码
-        if (!examineMethod && !configVal.isHuntInMainThread()){
-            return;
-        }
-
-        InsnList insnList = mnd.instructions;
-
-        if (insnList.size() < 1){
-            return;
-        }
-
-        InsnList codeInsertStart = new InsnList();
-        codeInsertStart.add(new LdcInsnNode(0L));
-        codeInsertStart.add(new VarInsnNode(Opcodes.LSTORE, orgLocalVarSize));
-        codeInsertStart.add(new VarInsnNode(Opcodes.LLOAD, orgLocalVarSize));
-        codeInsertStart.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
-                "java/lang/System",
-                "currentTimeMillis",
-                "()J", false));
-        codeInsertStart.add(new InsnNode(Opcodes.LSUB));
-        codeInsertStart.add(new VarInsnNode(Opcodes.LSTORE, orgLocalVarSize));
-
-        List<AbstractInsnNode> finishInsn = new ArrayList<AbstractInsnNode>();
-        Iterator<AbstractInsnNode> insnIt = insnList.iterator();
-        while (insnIt.hasNext()) {
-            AbstractInsnNode insn = insnIt.next();
-            if (FinishInsn.contains(insn.getOpcode())) {
-                finishInsn.add(insn);
-            }
-        }
-
-        insnList.insertBefore(insnList.getFirst(), codeInsertStart);
-
-        Iterator<AbstractInsnNode> finishInsnIt = finishInsn.iterator();
-        while (finishInsnIt.hasNext()){
-            AbstractInsnNode insn = finishInsnIt.next();
-
-            InsnList codeInsertEnd = new InsnList();
-            LabelNode end = new LabelNode();
-
-            if (!examineMethod){//仅主线程追踪
-                codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
-                        util_class_name,
-                        "isInUIThread",
-                        "()Z", false));
-                codeInsertEnd.add(new JumpInsnNode(Opcodes.IFEQ, end));
-            }
-
-            codeInsertEnd.add(new VarInsnNode(Opcodes.LLOAD, orgLocalVarSize));
-            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
-                    "java/lang/System",
-                    "currentTimeMillis",
-                    "()J", false));
-            codeInsertEnd.add(new InsnNode(Opcodes.LADD));
-            codeInsertEnd.add(new VarInsnNode(Opcodes.LSTORE, orgLocalVarSize));
-
-            if (!examineMethod){//仅主线程追踪
-                codeInsertEnd.add(new VarInsnNode(Opcodes.LLOAD, orgLocalVarSize));
-                codeInsertEnd.add(new LdcInsnNode(new Long(configVal.getTimeCriterion())));
-                codeInsertEnd.add(new InsnNode(Opcodes.LCMP));
-                codeInsertEnd.add(new JumpInsnNode(Opcodes.IFLE, end));
-            }
-
-            codeInsertEnd.add(new FieldInsnNode(Opcodes.GETSTATIC, "java/lang/System", "out",
-                    "Ljava/io/PrintStream;"));
-            codeInsertEnd.add(new TypeInsnNode(Opcodes.NEW, "java/lang/StringBuilder"));
-            codeInsertEnd.add(new InsnNode(Opcodes.DUP));
-            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false));
-
-            String hintStr = ( examineMethod ?
-                    "类[" + className+ "].函数[" + methodName + "]执行时间为(毫秒):"
-                        :
-                    "类[" + className+ "].函数[" + methodName + "]在UI线程中耗时较长,执行时间为(毫秒):"
-                        );
-            codeInsertEnd.add(new LdcInsnNode(hintStr));
-            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
-                    "java/lang/StringBuilder",
-                    "append",
-                    "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false));
-            codeInsertEnd.add(new VarInsnNode(Opcodes.LLOAD, orgLocalVarSize));
-            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
-                    "java/lang/StringBuilder",
-                    "append",
-                    "(J)Ljava/lang/StringBuilder;", false));
-            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
-                    "java/lang/StringBuilder",
-                    "toString",
-                    "()Ljava/lang/String;", false));
-
-            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
-                    "java/io/PrintStream",
-                    "println",
-                    "(Ljava/lang/String;)V", false));
-            codeInsertEnd.add(end);
-
-            insnList.insertBefore(insn, codeInsertEnd);
-        }
+//        int orgLocalVarSize = mnd.maxLocals;
+//        String methodName = mnd.name;
+//        String className = cn.name;
+//
+//        boolean examineMethod = false;
+//        List<AnnotationNode>annos = mnd.invisibleAnnotations;
+//        if (annos != null && annos.size() > 0){
+//            for (AnnotationNode anno : annos){
+//                if (Type.getDescriptor(ExamineMethodRunTime.class).equals(anno.desc)){
+//                    examineMethod = true;
+//                }
+//            }
+//        }
+//
+//        //没有函数注解，没有开启主线程追踪无需注入代码
+//        if (!examineMethod && !configVal.huntInMainThread){
+//            return;
+//        }
+//
+//        InsnList insnList = mnd.instructions;
+//
+//        if (insnList.size() < 1){
+//            return;
+//        }
+//
+//        InsnList codeInsertStart = new InsnList();
+//        codeInsertStart.add(new LdcInsnNode(0L));
+//        codeInsertStart.add(new VarInsnNode(Opcodes.LSTORE, orgLocalVarSize));
+//        codeInsertStart.add(new VarInsnNode(Opcodes.LLOAD, orgLocalVarSize));
+//        codeInsertStart.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+//                "java/lang/System",
+//                "currentTimeMillis",
+//                "()J", false));
+//        codeInsertStart.add(new InsnNode(Opcodes.LSUB));
+//        codeInsertStart.add(new VarInsnNode(Opcodes.LSTORE, orgLocalVarSize));
+//
+//        List<AbstractInsnNode> finishInsn = new ArrayList<AbstractInsnNode>();
+//        Iterator<AbstractInsnNode> insnIt = insnList.iterator();
+//        while (insnIt.hasNext()) {
+//            AbstractInsnNode insn = insnIt.next();
+//            if (FinishInsn.contains(insn.getOpcode())) {
+//                finishInsn.add(insn);
+//            }
+//        }
+//
+//        insnList.insertBefore(insnList.getFirst(), codeInsertStart);
+//
+//        Iterator<AbstractInsnNode> finishInsnIt = finishInsn.iterator();
+//        while (finishInsnIt.hasNext()){
+//            AbstractInsnNode insn = finishInsnIt.next();
+//
+//            InsnList codeInsertEnd = new InsnList();
+//            LabelNode end = new LabelNode();
+//
+//            if (!examineMethod){//仅主线程追踪
+//                codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+//                        util_class_name,
+//                        "isInUIThread",
+//                        "()Z", false));
+//                codeInsertEnd.add(new JumpInsnNode(Opcodes.IFEQ, end));
+//            }
+//
+//            codeInsertEnd.add(new VarInsnNode(Opcodes.LLOAD, orgLocalVarSize));
+//            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+//                    "java/lang/System",
+//                    "currentTimeMillis",
+//                    "()J", false));
+//            codeInsertEnd.add(new InsnNode(Opcodes.LADD));
+//            codeInsertEnd.add(new VarInsnNode(Opcodes.LSTORE, orgLocalVarSize));
+//
+//            if (!examineMethod){//仅主线程追踪
+//                codeInsertEnd.add(new VarInsnNode(Opcodes.LLOAD, orgLocalVarSize));
+//                codeInsertEnd.add(new LdcInsnNode(new Long(configVal.timeCriterion)));
+//                codeInsertEnd.add(new InsnNode(Opcodes.LCMP));
+//                codeInsertEnd.add(new JumpInsnNode(Opcodes.IFLE, end));
+//            }
+//
+//            codeInsertEnd.add(new FieldInsnNode(Opcodes.GETSTATIC, "java/lang/System", "out",
+//                    "Ljava/io/PrintStream;"));
+//            codeInsertEnd.add(new TypeInsnNode(Opcodes.NEW, "java/lang/StringBuilder"));
+//            codeInsertEnd.add(new InsnNode(Opcodes.DUP));
+//            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false));
+//
+//            String hintStr = ( examineMethod ?
+//                    "类[" + className+ "].函数[" + methodName + "]执行时间为(毫秒):"
+//                        :
+//                    "类[" + className+ "].函数[" + methodName + "]在UI线程中耗时较长,执行时间为(毫秒):"
+//                        );
+//            codeInsertEnd.add(new LdcInsnNode(hintStr));
+//            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+//                    "java/lang/StringBuilder",
+//                    "append",
+//                    "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false));
+//            codeInsertEnd.add(new VarInsnNode(Opcodes.LLOAD, orgLocalVarSize));
+//            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+//                    "java/lang/StringBuilder",
+//                    "append",
+//                    "(J)Ljava/lang/StringBuilder;", false));
+//            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+//                    "java/lang/StringBuilder",
+//                    "toString",
+//                    "()Ljava/lang/String;", false));
+//
+//            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
+//                    "java/io/PrintStream",
+//                    "println",
+//                    "(Ljava/lang/String;)V", false));
+//            codeInsertEnd.add(end);
+//
+//            insnList.insertBefore(insn, codeInsertEnd);
+//        }
     }
 
     public static List<Integer> FinishInsn = Arrays.asList(

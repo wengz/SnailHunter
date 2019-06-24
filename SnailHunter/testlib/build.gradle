@@ -24,7 +24,7 @@ android {
 
 repositories {
     maven{
-        url uri('D:/local_repo')
+        url uri('C:/local_repo')
     }
 }
 
@@ -35,5 +35,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'pers.wengzc:hunterKit:0.0.1'
+    //implementation 'pers.wengzc:hunterKit:0.0.1'
 }

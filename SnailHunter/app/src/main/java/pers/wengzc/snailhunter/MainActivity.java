@@ -8,12 +8,14 @@ import android.view.View;
 import android.view.ViewDebug;
 import android.widget.Button;
 
-import com.example.testlib.LibActivity;
-import com.example.testlib.LibSuperClass;
+//import com.example.testlib.LibActivity;
+//import com.example.testlib.LibSuperClass;
 
 import java.util.Random;
 
 import pers.wengzc.hunterKit.ExamineMethodRunTime;
+
+//import pers.wengzc.hunterKit.ExamineMethodRunTime;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -42,14 +44,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try{
-                    gotoLibActivity();
+                    //gotoLibActivity();
                 }catch (Exception e){}
             }
         });
 
         btnNotUi.setOnClickListener(new View.OnClickListener() {
 
-            @ExamineMethodRunTime
+            //@ExamineMethodRunTime
             @Override
             public void onClick(View view) {
                 new Thread(){
@@ -70,19 +72,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void gotoLibActivity (){
-        Intent intent = new Intent(this, LibActivity.class);
-        startActivity(intent);
-    }
+//    private void gotoLibActivity (){
+//        Intent intent = new Intent(this, LibActivity.class);
+//        startActivity(intent);
+//    }
 
-    @ExamineMethodRunTime
+    //@ExamineMethodRunTime
     private void exceptionUncatchedTest () {
         System.out.println(" ------ exceptionUncatchedTest before thow ------ ");
         int a = 4/0;
         System.out.println(" ------ exceptionUncatchedTest after thow ------ ");
     }
 
-    @ExamineMethodRunTime
+    //@ExamineMethodRunTime
     private void exceptionUncatchedIntentTest () throws Exception{
         System.out.println(" ------ exceptionUncatchedIntentTest before thow ------ ");
         throw new RuntimeException("--myRuntimeException--");
@@ -90,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @ExamineMethodRunTime
+    //@ExamineMethodRunTime
     private void exceptionCatchedTest (){
         try{
             System.out.println(" ------ exceptionCatchedTest before sleep ------ ");
@@ -105,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    @ExamineMethodRunTime
+    //@ExamineMethodRunTime
     private String multiReturnTest (){
         int r = new Random().nextInt(10);
         if (r % 2 == 0){
@@ -122,22 +124,22 @@ public class MainActivity extends AppCompatActivity {
         doubleRetTest();
     }
 
-    @ExamineMethodRunTime
+    //@ExamineMethodRunTime
     private int intRetTest (){
         return 1;
     }
 
-    @ExamineMethodRunTime
+    //@ExamineMethodRunTime
     private long longRetTest (){
         return 1L;
     }
 
-    @ExamineMethodRunTime
+    //@ExamineMethodRunTime
     private float floatRetTest (){
         return 1.0f;
     }
 
-    @ExamineMethodRunTime
+    //@ExamineMethodRunTime
     private double doubleRetTest (){
         return 1.0d;
     }

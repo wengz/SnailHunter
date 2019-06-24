@@ -2,8 +2,11 @@ apply plugin: 'com.android.application'
 
 apply plugin: 'pers.wengzc.snailHunter'
 
-//snailHunter.timeCriterion = 200
-//snailHunter.huntInMainThread = false
+sh {
+    include = [
+            "{ 'packageConstraint':'ewrqwerwqzzzzz', 'timeConstraint':123, 'justMainMethod':true }",
+    ]
+}
 
 android {
     compileSdkVersion 27
@@ -22,15 +25,16 @@ android {
         }
     }
 
-    compileOptions {
+    compileOptions{
         sourceCompatibility 1.8
         targetCompatibility 1.8
     }
 }
 
+
 repositories {
     maven{
-        url uri('D:/local_repo')
+        url uri('C:/local_repo')
     }
 }
 
@@ -42,5 +46,5 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'pers.wengzc:hunterKit:0.0.1'
-    implementation project(':testlib')
+    //implementation project(':testlib')
 }

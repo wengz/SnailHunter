@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-import pers.wengzc.hunterKit.ExamineMethodRunTime;
+//import pers.wengzc.hunterKit.ExamineMethodRunTime;
 
 public class LibActivity extends AppCompatActivity{
 
@@ -22,7 +22,7 @@ public class LibActivity extends AppCompatActivity{
 
         btn.setOnClickListener(new View.OnClickListener() {
 
-            @ExamineMethodRunTime
+            //@ExamineMethodRunTime
             @Override
             public void onClick(View v) {
                 sleepAWhile();
