@@ -1,5 +1,8 @@
 package pers.wengzc.snailhunter;
 
+import pers.wengzc.hunterKit.HunterTarget;
+
+@HunterTarget(inherited = true)
 public class ViewMethodSignature {
 
     public void fun1 (){
@@ -9,6 +12,7 @@ public class ViewMethodSignature {
     public void fun2 (int i){
 
     }
+
 
     public int fun3 (int i){
         return 0;

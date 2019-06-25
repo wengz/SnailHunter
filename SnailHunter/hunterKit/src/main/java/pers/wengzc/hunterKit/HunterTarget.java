@@ -10,12 +10,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.CLASS)
 public @interface HunterTarget {
 
-    boolean justMainThread();
+    boolean justMainThread() default false;
 
-    long timeConstraint();
+    long timeConstraint() default 0;
 
-    boolean inherited();
+    boolean inherited() default  false;
 
-    Action action();
+    Action action() default Action.Include;
 
 }

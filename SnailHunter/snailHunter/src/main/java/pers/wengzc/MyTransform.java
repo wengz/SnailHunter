@@ -56,7 +56,6 @@ import javassist.CtMethod;
 import javassist.bytecode.AccessFlag;
 import pers.wengzc.hunterKit.Action;
 import pers.wengzc.hunterKit.AndroidUtil;
-import pers.wengzc.hunterKit.ExamineMethodRunTime;
 
 public class MyTransform extends Transform{
 
@@ -138,8 +137,7 @@ public class MyTransform extends Transform{
                     &&
                     !( ctClass.isInterface() || ctClass.getDeclaredMethods().length < 1 )
             ){
-
-                zipFile(transformCode(ctClass.toBytecode(), ctClass.getName().replaceAll("\\.", "/")), outputStream, ctClass.getName().replaceAll("\\.", "/") + ".class");
+                zipFile(transformCode(ctClass.toBytecode(), ctClass.getName()), outputStream, ctClass.getName().replaceAll("\\.", "/") + ".class");
             }else{
                 zipFile(ctClass.toBytecode(), outputStream, ctClass.getName().replaceAll("\\.", "/") + ".class");
             }
@@ -148,10 +146,6 @@ public class MyTransform extends Transform{
     }
 
     private boolean isNeedInsertClass(String className) {
-        if (className.contains("AndroidUtil")){
-            return false;
-        }
-
         if (className.contains("ViewMethodSignature")){
             return true;
         }
@@ -172,6 +166,8 @@ public class MyTransform extends Transform{
 
     private byte[] transformCode (byte[] bs, String className)throws Exception{
         try{
+            System.out.println("----transformCode className="+className);
+
             ClassReader classReader = new ClassReader(bs);
             ClassNode classNode = new ClassNode();
             classReader.accept(classNode, 0);
@@ -183,6 +179,7 @@ public class MyTransform extends Transform{
                 for (MethodConfig mc : classMethodConfig){
                     if (mc.match(mnd)){
                         if (mc.config.action != Action.Exclude){
+                            System.out.println("---go transformMethod, method_name="+mnd.name);
                             transformMethod(mnd, classNode);
                         }
                         break;

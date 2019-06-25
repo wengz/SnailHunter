@@ -2,6 +2,7 @@ package pers.wengzc;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +15,7 @@ public class AnnotationConfigHelper {
 
     public static ClassPool cp;
 
-    public static Map<String, List<MethodConfig>[]> classMethodConfig;
+    public static Map<String, List<MethodConfig>[]> classMethodConfig = new HashMap<>();
 
     public static List<MethodConfig> getClassSelfMethodConfig (String className){
         if (!classMethodConfig.containsKey(className)){
@@ -106,6 +107,16 @@ public class AnnotationConfigHelper {
             val[0] = selfConfig;
             val[1] = inheritConifg;
             classMethodConfig.put(className, val);
+
+            System.out.println("----initClassMethodConfig, class name="+className);
+            System.out.println("----selfConfig");
+            for (MethodConfig methodConfig : selfConfig){
+                System.out.println(methodConfig.toString());
+            }
+            System.out.println("----inheritConifg");
+            for (MethodConfig methodConfig : inheritConifg){
+                System.out.println(methodConfig.toString());
+            }
 
         }catch (Exception e){
             e.printStackTrace();

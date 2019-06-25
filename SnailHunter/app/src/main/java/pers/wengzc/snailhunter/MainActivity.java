@@ -13,9 +13,6 @@ import android.widget.Button;
 
 import java.util.Random;
 
-import pers.wengzc.hunterKit.ExamineMethodRunTime;
-
-//import pers.wengzc.hunterKit.ExamineMethodRunTime;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -56,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 new Thread(){
 
-                    @ExamineMethodRunTime
                     @Override
                     public void run() {
                         try{
