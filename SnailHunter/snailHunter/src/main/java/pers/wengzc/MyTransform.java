@@ -92,8 +92,8 @@ public class MyTransform extends Transform{
     public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
 
         try{
-            configVal.adjuestInternal();
-            System.out.println(configVal.toString());
+            //configVal.adjuestInternal();
+            //System.out.println(configVal.toString());
 
             Collection<TransformInput> inputs = transformInvocation.getInputs();
             TransformOutputProvider transformOutputProvider = transformInvocation.getOutputProvider();
@@ -122,6 +122,8 @@ public class MyTransform extends Transform{
             List<CtClass> box = ConvertUtil.toCtClasses(inputs, classPool);
             AnnotationConfigHelper.cp = classPool;
             insertCode(box, jarFile);
+
+            AnnotationConfigHelper.releaseResource();
 
         }catch ( Exception e ){
             e.printStackTrace();
@@ -157,7 +159,7 @@ public class MyTransform extends Transform{
             ZipEntry entry = new ZipEntry(entryName);
             zos.putNextEntry(entry);
             zos.write(classBytesArray, 0, classBytesArray.length);
-            zos.closeEntry();;
+            zos.closeEntry();
             zos.flush();
         }catch (Exception e){
             e.printStackTrace();
@@ -166,7 +168,7 @@ public class MyTransform extends Transform{
 
     private byte[] transformCode (byte[] bs, String className)throws Exception{
         try{
-            System.out.println("----transformCode className="+className);
+            System.out.println("----transformCode className="+className+"----");
 
             ClassReader classReader = new ClassReader(bs);
             ClassNode classNode = new ClassNode();
@@ -178,7 +180,8 @@ public class MyTransform extends Transform{
                 MethodNode mnd = it.next();
                 for (MethodConfig mc : classMethodConfig){
                     if (mc.match(mnd)){
-                        if (mc.config.action != Action.Exclude){
+                        System.out.println("timeConstraint="+mc.config.timeConstraint);
+                        if (mc.config.action == Action.Include){
                             System.out.println("---go transformMethod, method_name="+mnd.name);
                             transformMethod(mnd, classNode);
                         }

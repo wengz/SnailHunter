@@ -17,6 +17,11 @@ public class AnnotationConfigHelper {
 
     public static Map<String, List<MethodConfig>[]> classMethodConfig = new HashMap<>();
 
+    public static void releaseResource (){
+        cp =  null;
+        classMethodConfig.clear();
+    }
+
     public static List<MethodConfig> getClassSelfMethodConfig (String className){
         if (!classMethodConfig.containsKey(className)){
             initClassMethodConfig(className);
@@ -85,6 +90,42 @@ public class AnnotationConfigHelper {
                 }
             }
 
+            //包注解
+            String packageName = ctClass.getPackageName();
+            System.out.println("package name = "+packageName);
+            System.out.println("class name = "+className);
+            String packageInfoClassName = packageName + ".package-info";
+            System.out.println("package-info class name = "+packageInfoClassName);
+            CtClass packageInfoClass = null;
+            try{
+                packageInfoClass = cp.getCtClass(packageInfoClassName);
+            }catch (Exception e){
+                //no care
+            }
+            if (packageInfoClass != null){
+                HunterTarget pckAnnotation = (HunterTarget) packageInfoClass.getAnnotation(HunterTarget.class);
+                if (pckAnnotation != null){
+                    for (CtMethod m : ctMethods){
+                        String methodName = m.getName();
+                        String description = m.getSignature();
+                        MethodConfig.MethodIdentify methodIdentify = new MethodConfig.MethodIdentify();
+                        methodIdentify.methodName = methodName;
+                        methodIdentify.methodDescription = description;
+
+                        MethodConfig.Config config = new MethodConfig.Config();
+                        config.justMainThread = pckAnnotation.justMainThread();
+                        config.timeConstraint = pckAnnotation.timeConstraint();
+                        config.inherited = false;
+                        config.action = pckAnnotation.action();
+
+                        MethodConfig pkConfig = new MethodConfig();
+                        pkConfig.methodIdentify = methodIdentify;
+                        pkConfig.config = config;
+                        selfConfig.add(pkConfig);
+                    }
+                }
+            }
+
             //父类影响
             CtClass superClass = ctClass.getSuperclass();
             if (superClass != null){
@@ -108,6 +149,7 @@ public class AnnotationConfigHelper {
             val[1] = inheritConifg;
             classMethodConfig.put(className, val);
 
+            System.out.println("start ##########################################################");
             System.out.println("----initClassMethodConfig, class name="+className);
             System.out.println("----selfConfig");
             for (MethodConfig methodConfig : selfConfig){
@@ -117,6 +159,7 @@ public class AnnotationConfigHelper {
             for (MethodConfig methodConfig : inheritConifg){
                 System.out.println(methodConfig.toString());
             }
+            System.out.println("end ##########################################################");
 
         }catch (Exception e){
             e.printStackTrace();

@@ -18,9 +18,9 @@ public class MethodConfig {
     }
 
     public boolean match (MethodNode methodNode){
-        System.out.println("---- method match");
-        System.out.println("methodNode.name="+methodNode.name+" methodIdentify.methodName="+methodIdentify.methodName);
-        System.out.println("methodNode.desc="+methodNode.desc+" methodIdentify.methodDescription="+methodIdentify.methodDescription);
+        //System.out.println("---- method match");
+        //System.out.println("methodNode.name="+methodNode.name+" methodIdentify.methodName="+methodIdentify.methodName);
+        //System.out.println("methodNode.desc="+methodNode.desc+" methodIdentify.methodDescription="+methodIdentify.methodDescription);
 
         if (methodNode.name.equals(methodIdentify.methodName)
         && methodNode.desc.equals(methodIdentify.methodDescription)){

@@ -42,10 +42,10 @@ public class MyPlugin implements Plugin<Project> {
             androidExtension.registerTransform(myTransform);
 
             //配置值对象
-            project.getExtensions().create("sh", ScriptConfigVal.class);
-            ScriptConfigVal configVal = (ScriptConfigVal) project.getExtensions().getByName("sh");
+            //project.getExtensions().create("sh", ScriptConfigVal.class);
+            //ScriptConfigVal configVal = (ScriptConfigVal) project.getExtensions().getByName("sh");
 
-            myTransform.setConfigVal(configVal);
+            //myTransform.setConfigVal(configVal);
 
             //工具类只在主工程中生成
             //if (MainModuleName.equals(project.getName())){
