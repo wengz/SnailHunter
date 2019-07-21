@@ -1,10 +1,13 @@
 package pers.wengzc;
 
 
+import android.text.TextUtils;
+
 import com.alibaba.fastjson.JSON;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class ScriptConfigVal {
 
@@ -15,12 +18,64 @@ public class ScriptConfigVal {
     public List<ConfigItem> includeConfig;
     public List<ConfigItem> excludeConfig;
 
+    /**
+     * 返回排除项中第一个匹配，若无则返回null
+     *
+     * @return
+     */
+    public ConfigItem matchExclude (String packageName, String className, String methodName){
+        className = toSimpleClassName(className);
+        if (excludeConfig != null){
+            for (ConfigItem item : excludeConfig){
+                if (item.match(packageName, className, methodName)){
+                    return item;
+                }
+            }
+        }
+        return null;
+    }
+
+    private static String toSimpleClassName (String className){
+        if (className.contains(".")){
+            return className.substring(className.lastIndexOf(".")+1);
+        }
+        return className;
+    }
+
+    /**
+     * 返回包含项中第一个匹配，若无则返回null
+     *
+     * @return
+     */
+    public ConfigItem matchInclude (String packageName, String className, String methodName){
+        className = toSimpleClassName(className);
+
+        //System.out.println("---matchInclude---： packName="+packageName+" className="+className+" methodName="+methodName);
+        if (includeConfig != null){
+            for (ConfigItem item : includeConfig){
+                if (item.match(packageName, className, methodName)){
+                    return item;
+                }
+            }
+        }
+        return null;
+    }
+
+
     public void adjuestInternal  (){
         if (include != null && include.length > 0){
             includeConfig = new ArrayList<>();
             for (String includeStr : include){
                 ConfigItem configItem = JSON.parseObject(includeStr, ConfigItem.class);
                 includeConfig.add(configItem);
+            }
+        }
+
+        if (exclude != null && exclude.length > 0){
+            excludeConfig = new ArrayList<>();
+            for (String exclueStr : exclude){
+                ConfigItem configItem = JSON.parseObject(exclueStr, ConfigItem.class);
+                excludeConfig.add(configItem);
             }
         }
     }
@@ -32,6 +87,12 @@ public class ScriptConfigVal {
         sb.append("----includeConfig\n");
         if (includeConfig != null){
             for (ConfigItem it : includeConfig){
+                sb.append(it.toString()+"\n");
+            }
+        }
+        sb.append("----excludeConfig\n");
+        if (excludeConfig != null){
+            for (ConfigItem it : excludeConfig){
                 sb.append(it.toString()+"\n");
             }
         }
@@ -49,15 +110,39 @@ public class ScriptConfigVal {
                     " justMainThread="+ justMainThread;
         }
 
+
+
+        public boolean match (String packageName, String className, String methodName){
+            packageName = packageName == null ? "" : packageName;
+            className = className == null ? "" : className;
+            methodName = methodName == null ? "" : methodName;
+
+//            System.out.println("--- item match---： packName="+packageName+" className="+className+" methodName="+methodName);
+//            System.out.println("packageConstraint="+packageConstraint+" classConstraint="+classConstraint+" methodConstraint="+methodConstraint);
+            if (packageConstraint != null && packageConstraint.length() > 0 && !Pattern.compile(packageConstraint).matcher(packageName).matches()){
+               // System.out.println("package not match");
+                return false;
+            }
+            if (classConstraint != null && classConstraint.length() > 0 && !Pattern.compile(classConstraint).matcher(className).matches()){
+                //System.out.println("class not match");
+                return false;
+            }
+            if (methodConstraint != null && methodConstraint.length() > 0 && !Pattern.compile(methodConstraint).matcher(methodName).matches()){
+                //System.out.println("method not match");
+                return false;
+            }
+            return true;
+        }
+
         public String packageConstraint;
 
         public String classConstraint;
 
         public String methodConstraint;
 
-        public long timeConstraint;
-
         public boolean justMainThread;
+
+        public long timeConstraint;
 
         public String getPackageConstraint() {
             return packageConstraint;

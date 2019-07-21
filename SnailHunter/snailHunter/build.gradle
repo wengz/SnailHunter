@@ -32,7 +32,7 @@ dependencies {
 
 
 group = 'pers.wengzc'
-version = '0.0.37'
+version = '0.0.46'
 uploadArchives {
     repositories {
         mavenDeployer {

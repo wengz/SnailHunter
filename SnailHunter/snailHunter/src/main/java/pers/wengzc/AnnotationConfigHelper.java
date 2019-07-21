@@ -9,6 +9,7 @@ import java.util.Map;
 import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
+import javassist.NotFoundException;
 import pers.wengzc.hunterKit.HunterTarget;
 
 public class AnnotationConfigHelper {
@@ -34,6 +35,16 @@ public class AnnotationConfigHelper {
             initClassMethodConfig(className);
         }
         return classMethodConfig.get(className)[1];
+    }
+
+    public static String getClassPackageName (String className){
+        try {
+            CtClass ctClass = cp.getCtClass(className);
+            return ctClass.getPackageName();
+        } catch (NotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     private static void initClassMethodConfig (String className){
@@ -149,17 +160,17 @@ public class AnnotationConfigHelper {
             val[1] = inheritConifg;
             classMethodConfig.put(className, val);
 
-            System.out.println("start ##########################################################");
-            System.out.println("----initClassMethodConfig, class name="+className);
-            System.out.println("----selfConfig");
-            for (MethodConfig methodConfig : selfConfig){
-                System.out.println(methodConfig.toString());
-            }
-            System.out.println("----inheritConifg");
-            for (MethodConfig methodConfig : inheritConifg){
-                System.out.println(methodConfig.toString());
-            }
-            System.out.println("end ##########################################################");
+//            System.out.println("start ##########################################################");
+//            System.out.println("----initClassMethodConfig, class name="+className);
+//            System.out.println("----selfConfig");
+//            for (MethodConfig methodConfig : selfConfig){
+//                System.out.println(methodConfig.toString());
+//            }
+//            System.out.println("----inheritConifg");
+//            for (MethodConfig methodConfig : inheritConifg){
+//                System.out.println(methodConfig.toString());
+//            }
+//            System.out.println("end ##########################################################");
 
         }catch (Exception e){
             e.printStackTrace();

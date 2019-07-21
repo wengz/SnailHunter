@@ -92,8 +92,8 @@ public class MyTransform extends Transform{
     public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
 
         try{
-            //configVal.adjuestInternal();
-            //System.out.println(configVal.toString());
+            configVal.adjuestInternal();
+            System.out.println(configVal.toString());
 
             Collection<TransformInput> inputs = transformInvocation.getInputs();
             TransformOutputProvider transformOutputProvider = transformInvocation.getOutputProvider();
@@ -176,16 +176,37 @@ public class MyTransform extends Transform{
 
             List<MethodConfig> classMethodConfig = AnnotationConfigHelper.getClassSelfMethodConfig(className);
             Iterator<MethodNode> it = classNode.methods.iterator();
-            while (it.hasNext()){
-                MethodNode mnd = it.next();
-                for (MethodConfig mc : classMethodConfig){
-                    if (mc.match(mnd)){
-                        System.out.println("timeConstraint="+mc.config.timeConstraint);
-                        if (mc.config.action == Action.Include){
-                            System.out.println("---go transformMethod, method_name="+mnd.name);
-                            transformMethod(mnd, classNode);
+
+            String packageName = AnnotationConfigHelper.getClassPackageName(className);
+            ScriptConfigVal.ConfigItem  classExcludeConfigItem = configVal.matchExclude(packageName, className, null);
+            //类的脚本配置项排除
+            if (classExcludeConfigItem == null){
+                while (it.hasNext()){
+                    MethodNode mnd = it.next();
+                    String methodName = mnd.name;
+                    ScriptConfigVal.ConfigItem  methodExcludeConfigItem = configVal.matchExclude(packageName, className, methodName);
+                    //方法的脚本配置项排除
+                    if (methodExcludeConfigItem == null){
+                        boolean matched = false;
+                        for (MethodConfig mc : classMethodConfig){
+                            if (mc.match(mnd)){
+                                if (mc.config.action == Action.Include){
+                                    System.out.println("---注解匹配成功! go transformMethod, method_name="+mnd.name+" timeConstraint="+mc.config.timeConstraint);
+                                    transformMethod(mnd, classNode);
+                                }
+                                matched = true;
+                                break;
+                            }
                         }
-                        break;
+
+                        //方法脚本配置项包含
+                        if (!matched){
+                            ScriptConfigVal.ConfigItem  methodIncludeConfigItem = configVal.matchInclude(packageName, className, methodName);
+                            if (methodIncludeConfigItem != null){
+                                System.out.println("--- 脚本配置成功! go transformMethod, method_name="+mnd.name+" timeConstraint="+methodIncludeConfigItem.timeConstraint);
+                                transformMethod(mnd, classNode);
+                            }
+                        }
                     }
                 }
             }

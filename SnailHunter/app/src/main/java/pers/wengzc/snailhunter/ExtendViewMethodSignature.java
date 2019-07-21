@@ -10,12 +10,10 @@ public class ExtendViewMethodSignature extends ViewMethodSignature implements Te
 
     }
 
-    @HunterTarget(timeConstraint = 666)
     public void fun1 (){
 
     }
 
-    @HunterTarget(timeConstraint = 888)
     @Override
     public void testInterfaceFun() {
 

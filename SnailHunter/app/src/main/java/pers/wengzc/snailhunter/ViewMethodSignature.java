@@ -12,7 +12,6 @@ public class ViewMethodSignature {
 
     }
 
-
     public int fun3 (int i){
         return 0;
     }
