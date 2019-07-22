@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewDebug;
 import android.widget.Button;
 
 import java.util.Random;
+
+import pers.wengzc.hunterKit.SnailHunter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 ExtendViewMethodSignature testObj = new ExtendViewMethodSignature();
                 testObj.fun1();
+                printThreadInfo();
             }
         });
 
@@ -42,11 +46,24 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         ExtendViewMethodSignature testObj = new ExtendViewMethodSignature();
                         testObj.fun1();
+                        printThreadInfo();
                     }
                 }.start();
 
             }
         });
+    }
+
+
+    void printThreadInfo (){
+        String threadName = Thread.currentThread().getName();
+        long id = Thread.currentThread().getId();
+        Log.d("xxx", "threadName: "+threadName+" threadid="+id);
+    }
+
+    void testSnailHunter (){
+
+        //SnailHunter.handle();
     }
 
 }
