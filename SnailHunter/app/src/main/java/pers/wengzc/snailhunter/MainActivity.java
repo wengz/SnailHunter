@@ -11,6 +11,8 @@ import android.widget.Button;
 
 import java.util.Random;
 
+import pers.wengzc.hunterKit.AndroidUtil;
+import pers.wengzc.hunterKit.Snail;
 import pers.wengzc.hunterKit.SnailHunter;
 
 public class MainActivity extends AppCompatActivity {
@@ -33,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 ExtendViewMethodSignature testObj = new ExtendViewMethodSignature();
                 testObj.fun1();
-                printThreadInfo();
             }
         });
 
@@ -46,7 +47,6 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         ExtendViewMethodSignature testObj = new ExtendViewMethodSignature();
                         testObj.fun1();
-                        printThreadInfo();
                     }
                 }.start();
 
@@ -61,9 +61,12 @@ public class MainActivity extends AppCompatActivity {
         Log.d("xxx", "threadName: "+threadName+" threadid="+id);
     }
 
-    void testSnailHunter (){
-
-        //SnailHunter.handle();
+    void forShowByteCode (){
+        Snail snail = new Snail("p", "c", "m", AndroidUtil.isInUIThread(),
+                100, 200
+        );
+        SnailHunter.handle(snail);
     }
+
 
 }

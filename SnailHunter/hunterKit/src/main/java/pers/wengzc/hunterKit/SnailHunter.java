@@ -10,7 +10,6 @@ public class SnailHunter {
     public static final String TAG = "SnailHunter";
 
     public static void handle(Snail snail){
-        Log.d(TAG, "execute time="+snail.executeTime);
+        Log.d(TAG, "snail="+snail);
     }
-
 }

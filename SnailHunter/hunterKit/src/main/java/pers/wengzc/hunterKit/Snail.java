@@ -14,6 +14,12 @@ public class Snail {
         this.executeTime = executeTime;
     }
 
+    @Override
+    public String toString() {
+        return "packageName="+packageName+" className="+className+" methodName="+methodName+
+                " isMainThread="+isMainThread+" timeConstraint="+timeConstraint+" executeTime="+executeTime;
+    }
+
     public String packageName;
 
     public String className;

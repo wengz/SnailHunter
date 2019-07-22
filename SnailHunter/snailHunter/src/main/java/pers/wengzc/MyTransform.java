@@ -56,6 +56,8 @@ import javassist.CtMethod;
 import javassist.bytecode.AccessFlag;
 import pers.wengzc.hunterKit.Action;
 import pers.wengzc.hunterKit.AndroidUtil;
+import pers.wengzc.hunterKit.Snail;
+import pers.wengzc.hunterKit.SnailHunter;
 
 public class MyTransform extends Transform{
 
@@ -192,7 +194,7 @@ public class MyTransform extends Transform{
                             if (mc.match(mnd)){
                                 if (mc.config.action == Action.Include){
                                     System.out.println("---注解匹配成功! go transformMethod, method_name="+mnd.name+" timeConstraint="+mc.config.timeConstraint);
-                                    transformMethod(mnd, classNode, mc.getMethodManipulateArg());
+                                    transformMethod(packageName, classNode, mnd, mc.getMethodManipulateArg());
                                 }
                                 matched = true;
                                 break;
@@ -204,7 +206,7 @@ public class MyTransform extends Transform{
                             ScriptConfigVal.ConfigItem  methodIncludeConfigItem = configVal.matchInclude(packageName, className, methodName);
                             if (methodIncludeConfigItem != null){
                                 System.out.println("--- 脚本配置成功! go transformMethod, method_name="+mnd.name+" timeConstraint="+methodIncludeConfigItem.timeConstraint);
-                                transformMethod(mnd, classNode, methodIncludeConfigItem.getMethodManipulateArg());
+                                transformMethod(packageName, classNode, mnd, methodIncludeConfigItem.getMethodManipulateArg());
                             }
                         }
                     }
@@ -266,11 +268,14 @@ public class MyTransform extends Transform{
 
     private static final String util_class_name = Type.getInternalName(AndroidUtil.class);
 
-    private void transformMethod (MethodNode mnd, ClassNode cn, MethodManipulateArg manipulateArg) {
+    private void transformMethod (String packageName, ClassNode cn, MethodNode mnd, MethodManipulateArg manipulateArg) {
 
         int orgLocalVarSize = mnd.maxLocals;
         String methodName = mnd.name;
         String className = cn.name;
+
+        mnd.maxStack = mnd.maxStack + 10;
+        mnd.maxLocals = mnd.maxLocals + 2;
 
         InsnList insnList = mnd.instructions;
         //无指令直接返回
@@ -329,34 +334,26 @@ public class MyTransform extends Transform{
             codeInsertEnd.add(new InsnNode(Opcodes.LCMP));
             codeInsertEnd.add(new JumpInsnNode(Opcodes.IFLE, end));
 
-            //提示
-            codeInsertEnd.add(new FieldInsnNode(Opcodes.GETSTATIC, "java/lang/System", "out",
-                    "Ljava/io/PrintStream;"));
-            codeInsertEnd.add(new TypeInsnNode(Opcodes.NEW, "java/lang/StringBuilder"));
+            String snailHunterInternalName = Type.getInternalName(SnailHunter.class);
+            String snailInternalName = Type.getInternalName(Snail.class);
+
+            //结果提交处理
+            codeInsertEnd.add(new TypeInsnNode(Opcodes.NEW, snailInternalName));
             codeInsertEnd.add(new InsnNode(Opcodes.DUP));
-            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false));
-
-            String hintStr = "class[" + className+ "]#method[" + methodName + "] execute time>>>";
-
-            codeInsertEnd.add(new LdcInsnNode(hintStr));
-            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
-                    "java/lang/StringBuilder",
-                    "append",
-                    "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false));
+            codeInsertEnd.add(new LdcInsnNode(packageName));
+            codeInsertEnd.add(new LdcInsnNode(className));
+            codeInsertEnd.add(new LdcInsnNode(methodName));
+            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                    util_class_name,
+                    "isInUIThread",
+                    "()Z", false));
+            codeInsertEnd.add(new LdcInsnNode(new Long(manipulateArg.timeConstraint)));
             codeInsertEnd.add(new VarInsnNode(Opcodes.LLOAD, orgLocalVarSize));
-            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
-                    "java/lang/StringBuilder",
-                    "append",
-                    "(J)Ljava/lang/StringBuilder;", false));
-            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
-                    "java/lang/StringBuilder",
-                    "toString",
-                    "()Ljava/lang/String;", false));
-
-            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKEVIRTUAL,
-                    "java/io/PrintStream",
-                    "println",
-                    "(Ljava/lang/String;)V", false));
+            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, snailInternalName, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZJJ)V", false));
+            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                    snailHunterInternalName,
+                    "handle",
+                    "(Lpers/wengzc/hunterKit/Snail;)V", false));
             codeInsertEnd.add(end);
 
             insnList.insertBefore(insn, codeInsertEnd);
