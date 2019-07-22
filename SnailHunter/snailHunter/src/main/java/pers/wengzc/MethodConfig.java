@@ -50,4 +50,11 @@ public class MethodConfig {
 
     }
 
+    public MethodManipulateArg getMethodManipulateArg (){
+        MethodManipulateArg arg = new MethodManipulateArg();
+        arg.justMainThread = config.justMainThread;
+        arg.timeConstraint = config.timeConstraint;
+        return arg;
+    }
+
 }

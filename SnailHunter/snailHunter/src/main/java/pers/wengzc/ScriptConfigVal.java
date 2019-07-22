@@ -67,6 +67,9 @@ public class ScriptConfigVal {
             includeConfig = new ArrayList<>();
             for (String includeStr : include){
                 ConfigItem configItem = JSON.parseObject(includeStr, ConfigItem.class);
+                if (!includeStr.contains("timeConstraint")){
+                    configItem.timeConstraint = -1;
+                }
                 includeConfig.add(configItem);
             }
         }
@@ -182,6 +185,14 @@ public class ScriptConfigVal {
 
         public void setJustMainThread(boolean justMainThread) {
             this.justMainThread = justMainThread;
+        }
+
+
+        public MethodManipulateArg getMethodManipulateArg (){
+            MethodManipulateArg arg = new MethodManipulateArg();
+            arg.justMainThread = justMainThread;
+            arg.timeConstraint = timeConstraint;
+            return arg;
         }
 
     }

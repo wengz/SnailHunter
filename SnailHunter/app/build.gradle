@@ -40,17 +40,21 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'pers.wengzc:hunterKit:0.0.3'
+    implementation 'pers.wengzc:hunterKit:0.0.4'
     //implementation project(':testlib')
 }
 
 sh {
-    include = [
-            "{'packageConstraint':'pers.wengzc.snailhunter', 'timeConstraint':999}",
-    ]
+//    include = [
+//            "{ 'classConstraint':'ExtendViewMethodSignature', 'timeConstraint':0 }",
+//    ]
 
-    exclude = [
-            "{ 'methodConstraint':'testInterfaceFun' }",
-    ]
-    // 'methodConstraint':'fun1' 'classConstraint':'ViewMethodSignature',
+//    exclude = [
+//            "{ 'classConstraint':'ExtendViewMethodSignature' }",
+//    ]
+
+    //'packageConstraint':''
+    //'classConstraint':'ViewMethodSignature'
+    // 'methodConstraint':'fun1'
+    //'timeConstraint':500
 }

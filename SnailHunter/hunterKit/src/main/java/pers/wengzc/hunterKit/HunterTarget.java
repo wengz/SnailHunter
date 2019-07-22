@@ -12,7 +12,7 @@ public @interface HunterTarget {
 
     boolean justMainThread() default false;
 
-    long timeConstraint() default 0;
+    long timeConstraint() default -1;
 
     boolean inherited() default  false;
 
