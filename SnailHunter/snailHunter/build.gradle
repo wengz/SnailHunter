@@ -27,12 +27,12 @@ dependencies {
     implementation 'com.google.android:android:4.1.1.4'
     implementation 'com.squareup:javawriter:2.5.1'
     implementation 'com.alibaba:fastjson:1.1.71.android'
-    implementation 'pers.wengzc:hunterKit:0.0.11'
+    implementation 'pers.wengzc:hunterKit:0.0.12'
 }
 
 
 group = 'pers.wengzc'
-version = '0.0.64'
+version = '0.0.65'
 uploadArchives {
     repositories {
         mavenDeployer {

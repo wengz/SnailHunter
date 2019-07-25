@@ -1,8 +1,5 @@
 package pers.wengzc.snailhunter;
 
-
-import pers.wengzc.hunterKit.HunterTarget;
-
 public class ExtendViewMethodSignature extends ViewMethodSignature implements TestInterface{
 
     @Override
@@ -10,7 +7,6 @@ public class ExtendViewMethodSignature extends ViewMethodSignature implements Te
 
     }
 
-    @HunterTarget
     @Override
     public void fun1 (){
         try {

@@ -12,6 +12,9 @@ import pers.wengzc.hunterKit.SnailWatcher;
  */
 public class SnailHunter {
 
+
+
+
     public static void install (Context context){
         ByteCodeBridge.sSnailWatcher = new SnailWatcher() {
             @Override
@@ -19,5 +22,14 @@ public class SnailHunter {
                 Log.d("xxx", "in snail hunter rt:"+snail);
             }
         };
+    }
+
+    private static  ConnectServiceFuture sConnectServiceFuture;
+
+    private static void connectServiceIfNot (){
+        if (sConnectServiceFuture == null){
+            sConnectServiceFuture = new ConnectServiceFuture();
+
+        }
     }
 }

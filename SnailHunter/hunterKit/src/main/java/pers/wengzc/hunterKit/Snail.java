@@ -1,5 +1,8 @@
 package pers.wengzc.hunterKit;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * @author wengzc
  */

@@ -1,4 +1,4 @@
-package pers.wengzc.hunterKit;
+package com.wengzc.snailhunterrt;
 
 import android.os.Handler;
 import android.os.HandlerThread;

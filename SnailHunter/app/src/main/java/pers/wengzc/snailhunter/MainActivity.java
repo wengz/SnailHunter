@@ -11,9 +11,6 @@ import android.widget.Button;
 
 import java.util.Random;
 
-import pers.wengzc.hunterKit.AndroidUtil;
-import pers.wengzc.hunterKit.Snail;
-
 public class MainActivity extends AppCompatActivity {
 
     private Button btnUi;
