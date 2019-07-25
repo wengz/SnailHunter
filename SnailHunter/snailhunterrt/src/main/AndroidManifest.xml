@@ -1,0 +1,18 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.wengzc.snailhunterrt" >
+
+    <application>
+        <activity android:name=".CanaryDisplayActivity"
+            android:process=":snailhunter"
+            android:enabled="false"
+            android:icon="@drawable/snail_hunter_icon"
+            android:label="@string/canary_display_activity_label"
+            android:taskAffinity="com.wengzc.snailhunterrt">
+
+        </activity>
+
+    </application>
+
+</manifest>
+
+

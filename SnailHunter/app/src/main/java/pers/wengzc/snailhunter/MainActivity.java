@@ -13,7 +13,6 @@ import java.util.Random;
 
 import pers.wengzc.hunterKit.AndroidUtil;
 import pers.wengzc.hunterKit.Snail;
-import pers.wengzc.hunterKit.SnailHunter;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,16 +55,10 @@ public class MainActivity extends AppCompatActivity {
 
 
     void printThreadInfo (){
+
         String threadName = Thread.currentThread().getName();
         long id = Thread.currentThread().getId();
         Log.d("xxx", "threadName: "+threadName+" threadid="+id);
-    }
-
-    void forShowByteCode (){
-        Snail snail = new Snail("p", "c", "m", AndroidUtil.isInUIThread(),
-                100, 200
-        );
-        SnailHunter.handle(snail);
     }
 
 

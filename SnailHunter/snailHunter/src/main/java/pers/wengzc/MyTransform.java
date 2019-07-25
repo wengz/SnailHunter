@@ -56,8 +56,8 @@ import javassist.CtMethod;
 import javassist.bytecode.AccessFlag;
 import pers.wengzc.hunterKit.Action;
 import pers.wengzc.hunterKit.AndroidUtil;
+import pers.wengzc.hunterKit.ByteCodeBridge;
 import pers.wengzc.hunterKit.Snail;
-import pers.wengzc.hunterKit.SnailHunter;
 
 public class MyTransform extends Transform{
 
@@ -334,7 +334,7 @@ public class MyTransform extends Transform{
             codeInsertEnd.add(new InsnNode(Opcodes.LCMP));
             codeInsertEnd.add(new JumpInsnNode(Opcodes.IFLE, end));
 
-            String snailHunterInternalName = Type.getInternalName(SnailHunter.class);
+            String byteCodeBrudgeInternalName = Type.getInternalName(ByteCodeBridge.class);
             String snailInternalName = Type.getInternalName(Snail.class);
 
             //结果提交处理
@@ -351,7 +351,7 @@ public class MyTransform extends Transform{
             codeInsertEnd.add(new VarInsnNode(Opcodes.LLOAD, orgLocalVarSize));
             codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, snailInternalName, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZJJ)V", false));
             codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
-                    snailHunterInternalName,
+                    byteCodeBrudgeInternalName,
                     "handle",
                     "(Lpers/wengzc/hunterKit/Snail;)V", false));
             codeInsertEnd.add(end);

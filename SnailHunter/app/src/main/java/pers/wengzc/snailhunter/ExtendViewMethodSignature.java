@@ -13,11 +13,11 @@ public class ExtendViewMethodSignature extends ViewMethodSignature implements Te
     @HunterTarget
     @Override
     public void fun1 (){
-//        try {
-//            Thread.sleep(200);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            Thread.sleep(200);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
