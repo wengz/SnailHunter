@@ -42,20 +42,12 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         ExtendViewMethodSignature testObj = new ExtendViewMethodSignature();
-                        testObj.fun1();
+                        testObj.testInterfaceFun();
                     }
                 }.start();
 
             }
         });
-    }
-
-
-    void printThreadInfo (){
-
-        String threadName = Thread.currentThread().getName();
-        long id = Thread.currentThread().getId();
-        Log.d("xxx", "threadName: "+threadName+" threadid="+id);
     }
 
 

@@ -10,7 +10,7 @@ sourceCompatibility = "1.8"
 targetCompatibility = "1.8"
 
 group = 'pers.wengzc'
-version = '0.0.14'
+version = '0.0.18'
 uploadArchives {
     repositories {
         mavenDeployer {

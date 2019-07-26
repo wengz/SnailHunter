@@ -57,7 +57,7 @@ import javassist.bytecode.AccessFlag;
 import pers.wengzc.hunterKit.Action;
 import pers.wengzc.hunterKit.AndroidUtil;
 import pers.wengzc.hunterKit.ByteCodeBridge;
-import pers.wengzc.hunterKit.Snail;
+import pers.wengzc.hunterKit.WriggleInfo;
 
 public class MyTransform extends Transform{
 
@@ -335,10 +335,10 @@ public class MyTransform extends Transform{
             codeInsertEnd.add(new JumpInsnNode(Opcodes.IFLE, end));
 
             String byteCodeBrudgeInternalName = Type.getInternalName(ByteCodeBridge.class);
-            String snailInternalName = Type.getInternalName(Snail.class);
+            String wriggleInfoInternalName = Type.getInternalName(WriggleInfo.class);
 
             //结果提交处理
-            codeInsertEnd.add(new TypeInsnNode(Opcodes.NEW, snailInternalName));
+            codeInsertEnd.add(new TypeInsnNode(Opcodes.NEW, wriggleInfoInternalName));
             codeInsertEnd.add(new InsnNode(Opcodes.DUP));
             codeInsertEnd.add(new LdcInsnNode(packageName));
             codeInsertEnd.add(new LdcInsnNode(className));
@@ -349,11 +349,11 @@ public class MyTransform extends Transform{
                     "()Z", false));
             codeInsertEnd.add(new LdcInsnNode(new Long(manipulateArg.timeConstraint)));
             codeInsertEnd.add(new VarInsnNode(Opcodes.LLOAD, orgLocalVarSize));
-            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, snailInternalName, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZJJ)V", false));
+            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, wriggleInfoInternalName, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZJJ)V", false));
             codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
                     byteCodeBrudgeInternalName,
                     "handle",
-                    "(Lpers/wengzc/hunterKit/Snail;)V", false));
+                    "(Lpers/wengzc/hunterKit/WriggleInfo;)V", false));
             codeInsertEnd.add(end);
 
             insnList.insertBefore(insn, codeInsertEnd);
