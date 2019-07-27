@@ -2,6 +2,7 @@ package pers.wengzc.snailhunterrt.ui;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,7 +66,27 @@ public class DisplayAdapter extends RecyclerView.Adapter<DisplayAdapter.DisplayV
         }
 
         public void updateForData (Snail snail){
-            mTextView.setText(snail.toString());
+            StringBuilder sb = new StringBuilder();
+            sb.append(elementToHtmlString("进程号:"+snail.processId));
+            sb.append(elementToHtmlString("线程号:"+snail.threadId));
+            sb.append(elementToHtmlString("线程名:"+snail.threadName));
+            sb.append(elementToHtmlString("包名:"+snail.packageName));
+            sb.append(elementToHtmlString("类名:"+snail.className));
+            sb.append(elementToHtmlString("方法名:"+snail.methodName));
+            sb.append(elementToHtmlString("是否主线程:"+snail.isMainThread));
+            sb.append(elementToHtmlString("时间限制(ms):"+snail.timeConstraint));
+            sb.append(elementToHtmlString("实际运行时间(ms):"+snail.executeTime));
+            mTextView.setText(Html.fromHtml(sb.toString()));
+        }
+
+        public static final String SEPARATOR = "\r\n";
+
+        private String elementToHtmlString (String element){
+            String htmlString = element.replaceAll(SEPARATOR, "<br/>");
+            htmlString += "<br/>";
+            htmlString = String.format("<font color='#ffff00'>%s</font>", htmlString);
+            htmlString += "<br/>";
+            return htmlString;
         }
     }
 

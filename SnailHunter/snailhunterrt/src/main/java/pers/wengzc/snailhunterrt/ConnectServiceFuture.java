@@ -33,6 +33,7 @@ public class ConnectServiceFuture implements Future<ISnailHunterService>, Servic
     }
 
     private synchronized ISnailHunterService doGet (Long timeoutMs) throws InterruptedException, TimeoutException {
+        Log.d("xxx", "synchronized ConnectServiceFuture doGet: ");
         if (mResultReceived){
             return mResult;
         }
@@ -67,11 +68,6 @@ public class ConnectServiceFuture implements Future<ISnailHunterService>, Servic
         if (enterWaiting){
             notifyAll();
         }
-    }
-
-    @Override
-    public void onBindingDied(ComponentName name) {
-        Log.d("xxx", "onBindingDied: ");
     }
 
     @Override

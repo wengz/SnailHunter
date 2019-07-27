@@ -103,10 +103,7 @@ public class AnnotationConfigHelper {
 
             //包注解
             String packageName = ctClass.getPackageName();
-            System.out.println("package name = "+packageName);
-            System.out.println("class name = "+className);
             String packageInfoClassName = packageName + ".package-info";
-            System.out.println("package-info class name = "+packageInfoClassName);
             CtClass packageInfoClass = null;
             try{
                 packageInfoClass = cp.getCtClass(packageInfoClassName);
@@ -138,14 +135,24 @@ public class AnnotationConfigHelper {
             }
 
             //父类影响
-            CtClass superClass = ctClass.getSuperclass();
+            CtClass superClass = null;
+            try{
+                superClass = ctClass.getSuperclass();
+            }catch (Exception e){
+                //no care
+            }
             if (superClass != null){
                 List<MethodConfig> inheritedConfig = getClassInheritMethodConfig(superClass.getName());
                 selfConfig.addAll(inheritedConfig);
             }
 
             //接口影响
-            CtClass[] interfaces = ctClass.getInterfaces();
+            CtClass[] interfaces= null;
+            try{
+                interfaces = ctClass.getInterfaces();
+            }catch (Exception e){
+                //no care
+            }
             if (interfaces != null){
                 for (CtClass itf : interfaces){
                     List<MethodConfig> itfMethodConfig = getClassInheritMethodConfig(itf.getName());
@@ -160,24 +167,11 @@ public class AnnotationConfigHelper {
             val[1] = inheritConifg;
             classMethodConfig.put(className, val);
 
-//            System.out.println("start ##########################################################");
-//            System.out.println("----initClassMethodConfig, class name="+className);
-//            System.out.println("----selfConfig");
-//            for (MethodConfig methodConfig : selfConfig){
-//                System.out.println(methodConfig.toString());
-//            }
-//            System.out.println("----inheritConifg");
-//            for (MethodConfig methodConfig : inheritConifg){
-//                System.out.println(methodConfig.toString());
-//            }
-//            System.out.println("end ##########################################################");
-
         }catch (Exception e){
             e.printStackTrace();
         }
 
     }
-
 
     private static final String CONSTRUCT_METHOD_NAME = "<init>";
 

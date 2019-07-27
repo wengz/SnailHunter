@@ -9,7 +9,11 @@ import android.view.View;
 import android.view.ViewDebug;
 import android.widget.Button;
 
+import org.apache.commons.lang3.StringUtils;
+
 import java.util.Random;
+
+import pers.wengzc.hunterKit.HunterTarget;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,8 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                ExtendViewMethodSignature testObj = new ExtendViewMethodSignature();
-                testObj.fun1();
+                longTimeWork();
             }
         });
 
@@ -38,17 +41,43 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
+
                 new Thread(){
                     @Override
                     public void run() {
-                        ExtendViewMethodSignature testObj = new ExtendViewMethodSignature();
-                        testObj.testInterfaceFun();
+                        longTimeWork();
                     }
                 }.start();
-
             }
         });
     }
 
+    private void longTimeWork (){
+        try{
+            Thread.sleep(300);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
 
+    private void runInWorkThread (){
+        Log.d("xxx", "runInWorkThread: ");
+    }
+
+    private void useLang3 (){
+        String result = StringUtils.repeat("hello,ww", 1000);
+        int length = StringUtils.length(result);
+        Log.d("xxxx", "useLang3: "+result);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
 }

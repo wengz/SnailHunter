@@ -40,13 +40,13 @@ public class SnailHunterService extends Service {
     private ISnailHunterService.Stub mSnailHunterService = new ISnailHunterService.Stub() {
         @Override
         public void catchNewSnail(Snail snail) throws RemoteException {
-            mSnails.add(snail);
+            mSnails.add(0, snail);
             if (snail.timeConstraint >= 0){
                 //时间约束大于等于0的进行通知栏提醒
                 Notifier.notifyNewSnail(getApplicationContext());
             }else{
                 //时间约束小于0的进行logcat记录
-                Log.d("xxx", ">>>SnailHunterService#catchNewSnail>>>"+snail);
+                Log.d(Constant.TAG, ">>>SnailHunterService#catchNewSnail>>>"+snail);
             }
         }
 

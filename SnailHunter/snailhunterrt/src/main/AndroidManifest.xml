@@ -1,17 +1,17 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="pers.wengzc.snailhunterrt" >
+    package="pers.wengzc.snailhunterrt">
 
     <application>
-        <activity android:name=".CanaryDisplayActivity"
+        <activity
+            android:name=".CanaryDisplayActivity"
             android:process=":snailhunter"
-            android:icon="@drawable/snail_hunter_icon"
             android:taskAffinity="pers.wengzc.snailhunterrt"
-            android:label="@string/canary_display_activity_label">
-
+            android:theme="@style/Theme.AppCompat.NoActionBar">
         </activity>
 
-        <service android:name=".SnailHunterService"
-            android:process=":snailhunter"/>
+        <service
+            android:name=".SnailHunterService"
+            android:process=":snailhunter" />
     </application>
 
 </manifest>

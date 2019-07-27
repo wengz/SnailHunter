@@ -6,7 +6,7 @@
     android:minHeight="48dp"
     android:orientation="horizontal">
 
-    <com.wengzc.snailhunterrt.ui.DisplayConnectorView
+    <pers.wengzc.snailhunterrt.ui.DisplayConnectorView
         android:id="@+id/snail_row_connector"
         android:layout_width="16dp"
         android:layout_height="match_parent"
@@ -18,9 +18,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
-        android:layout_weight="1"/>
+        android:layout_weight="1"
+        android:paddingTop="20dp"
+        android:paddingBottom="20dp"/>
 
-    <com.wengzc.snailhunterrt.ui.MoreDetailsView
+    <pers.wengzc.snailhunterrt.ui.MoreDetailsView
         android:id="@+id/snail_row_more"
         android:layout_width="12dp"
         android:layout_height="12dp"

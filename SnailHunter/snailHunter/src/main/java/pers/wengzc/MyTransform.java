@@ -89,7 +89,6 @@ public class MyTransform extends Transform{
         return false;
     }
 
-
     @Override
     public void transform(TransformInvocation transformInvocation) throws TransformException, InterruptedException, IOException {
 
@@ -124,7 +123,6 @@ public class MyTransform extends Transform{
             List<CtClass> box = ConvertUtil.toCtClasses(inputs, classPool);
             AnnotationConfigHelper.cp = classPool;
             insertCode(box, jarFile);
-
             AnnotationConfigHelper.releaseResource();
 
         }catch ( Exception e ){
@@ -137,9 +135,9 @@ public class MyTransform extends Transform{
         for (CtClass ctClass : box){
             ctClass.setModifiers(AccessFlag.setPublic(ctClass.getModifiers()));
             if (
-                    isNeedInsertClass(ctClass.getName())
-                    &&
-                    !( ctClass.isInterface() || ctClass.getDeclaredMethods().length < 1 )
+                isNeedInsertClass(ctClass.getName())
+                &&
+                !( ctClass.isInterface() || ctClass.getDeclaredMethods().length < 1 )
             ){
                 zipFile(transformCode(ctClass.toBytecode(), ctClass.getName()), outputStream, ctClass.getName().replaceAll("\\.", "/") + ".class");
             }else{
@@ -150,10 +148,13 @@ public class MyTransform extends Transform{
     }
 
     private boolean isNeedInsertClass(String className) {
-        if (className.contains("ViewMethodSignature")){
-            return true;
+        if (className.startsWith("pers.wengzc.snailhunterrt")
+            || className.startsWith("pers.wengzc.hunterKit")
+            || className.startsWith("android")
+        ){
+            return false;
         }
-        return false;
+        return true;
     }
 
     private void zipFile (byte[] classBytesArray, ZipOutputStream zos, String entryName){
@@ -170,8 +171,6 @@ public class MyTransform extends Transform{
 
     private byte[] transformCode (byte[] bs, String className)throws Exception{
         try{
-            System.out.println("----transformCode className="+className+"----");
-
             ClassReader classReader = new ClassReader(bs);
             ClassNode classNode = new ClassNode();
             classReader.accept(classNode, 0);
@@ -193,7 +192,7 @@ public class MyTransform extends Transform{
                         for (MethodConfig mc : classMethodConfig){
                             if (mc.match(mnd)){
                                 if (mc.config.action == Action.Include){
-                                    System.out.println("---注解匹配成功! go transformMethod, method_name="+mnd.name+" timeConstraint="+mc.config.timeConstraint);
+                                    System.out.println("---注解匹配成功! 进行字节码修改, 类名="+className+", 方法名="+mnd.name);
                                     transformMethod(packageName, classNode, mnd, mc.getMethodManipulateArg());
                                 }
                                 matched = true;
@@ -205,7 +204,7 @@ public class MyTransform extends Transform{
                         if (!matched){
                             ScriptConfigVal.ConfigItem  methodIncludeConfigItem = configVal.matchInclude(packageName, className, methodName);
                             if (methodIncludeConfigItem != null){
-                                System.out.println("--- 脚本配置成功! go transformMethod, method_name="+mnd.name+" timeConstraint="+methodIncludeConfigItem.timeConstraint);
+                                System.out.println("---脚本配置成功! 进行字节码修改, 类名="+className+", 方法名="+mnd.name);
                                 transformMethod(packageName, classNode, mnd, methodIncludeConfigItem.getMethodManipulateArg());
                             }
                         }
@@ -223,49 +222,6 @@ public class MyTransform extends Transform{
         return bs;
     }
 
-//    private void recursiveTransform (File file){
-//        if (file.isDirectory()){
-//            File[] subFiles = file.listFiles();
-//            for (File f : subFiles){
-//                recursiveTransform(f);
-//            }
-//        }else if (file.isFile()){
-//            transformClass(file.getAbsolutePath());
-//        }
-//    }
-
-//    private void transformClass (String classFilePath) {
-//        String className = "";
-//        try{
-//            //System.out.println("---- transformClass ------ classFilePath="+classFilePath);
-//            FileInputStream fileInputStream = new FileInputStream(classFilePath);
-//            ClassReader classReader = new ClassReader(fileInputStream);
-//            ClassNode classNode = new ClassNode();
-//            classReader.accept(classNode, 0);
-//
-//            className = classNode.name;
-//            if (util_class_name.equals(className)){
-//                return;
-//            }
-//
-//            Iterator<MethodNode> it = classNode.methods.iterator();
-//            while (it.hasNext()){
-//                MethodNode mnd = it.next();
-//                transformMethod(mnd, classNode);
-//            }
-//
-//            ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-//            classNode.accept(cw);
-//            byte[] b = cw.toByteArray();
-//            FileOutputStream fileOutputStream = new FileOutputStream(""+classFilePath);
-//            fileOutputStream.write(b, 0, b.length);
-//            fileOutputStream.close();
-//        }catch (Exception e){
-//            System.out.println("class文件"+className+"修改失败,exception="+e);
-//            e.printStackTrace();
-//        }
-//    }
-
     private static final String util_class_name = Type.getInternalName(AndroidUtil.class);
 
     private void transformMethod (String packageName, ClassNode cn, MethodNode mnd, MethodManipulateArg manipulateArg) {
@@ -273,9 +229,7 @@ public class MyTransform extends Transform{
         int orgLocalVarSize = mnd.maxLocals;
         String methodName = mnd.name;
         String className = cn.name;
-
-        mnd.maxStack = mnd.maxStack + 10;
-        mnd.maxLocals = mnd.maxLocals + 2;
+        className = className.replace("/", ".");
 
         InsnList insnList = mnd.instructions;
         //无指令直接返回

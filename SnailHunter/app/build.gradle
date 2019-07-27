@@ -40,14 +40,15 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'pers.wengzc:snailhunterrt:0.0.18'
+    implementation 'pers.wengzc:snailhunterrt:0.0.31'
+    implementation 'org.apache.commons:commons-lang3:3.9'
     //implementation project(':testlib')
 }
 
-//sh {
-//    include = [
-//            "{ 'classConstraint':'ExtendViewMethodSignature', 'timeConstraint':0 }",
-//    ]
+sh {
+    include = [
+            "{ 'justMainThread': true, 'timeConstraint':200 }",
+    ]
 
 //    exclude = [
 //            "{ 'classConstraint':'ExtendViewMethodSignature' }",
@@ -55,6 +56,7 @@ dependencies {
 
     //'packageConstraint':''
     //'classConstraint':'ViewMethodSignature'
-    // 'methodConstraint':'fun1'
+    //'methodConstraint':'fun1'
+    //'justMainThread':
     //'timeConstraint':500
-//}
+}

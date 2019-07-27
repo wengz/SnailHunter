@@ -33,7 +33,7 @@ public class Notifier {
             // 创建
             NotificationChannel channel = new NotificationChannel(String.valueOf(NOTIFICATION_CHANNEL_ID), "通知", NotificationManager.IMPORTANCE_DEFAULT);
             channel.enableLights(true);
-            channel.setLightColor(ContextCompat.getColor(context, R.color.color_75c17d));
+            channel.setLightColor(ContextCompat.getColor(context, R.color.color_f49c2f));
             channel.setShowBadge(true);
             channel.setDescription(contentTitle);
             manager.createNotificationChannel(channel);
@@ -42,11 +42,9 @@ public class Notifier {
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context, String.valueOf(NOTIFICATION_CHANNEL_ID));
         mBuilder.setContentTitle(contentTitle)
                 .setContentText(contentText)
-                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.snail_hunter_icon))
-                .setOnlyAlertOnce(true)
-                .setDefaults(Notification.DEFAULT_ALL)
-                .setWhen(System.currentTimeMillis())
                 .setSmallIcon(R.drawable.snail_hunter_notification)
+                .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.snail_hunter_icon))
+                .setWhen(System.currentTimeMillis())
                 .setAutoCancel(true);
         mBuilder.setContentIntent(pendingIntent);
         manager.notify(NOTIFICATION_CHANNEL_ID, mBuilder.build());

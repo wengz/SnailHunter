@@ -50,7 +50,6 @@ public class ScriptConfigVal {
     public ConfigItem matchInclude (String packageName, String className, String methodName){
         className = toSimpleClassName(className);
 
-        //System.out.println("---matchInclude---： packName="+packageName+" className="+className+" methodName="+methodName);
         if (includeConfig != null){
             for (ConfigItem item : includeConfig){
                 if (item.match(packageName, className, methodName)){
@@ -86,7 +85,7 @@ public class ScriptConfigVal {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("----ScriptConfigVal----\n");
+        sb.append("----ScriptConfig----\n");
         sb.append("----includeConfig\n");
         if (includeConfig != null){
             for (ConfigItem it : includeConfig){
@@ -120,18 +119,13 @@ public class ScriptConfigVal {
             className = className == null ? "" : className;
             methodName = methodName == null ? "" : methodName;
 
-//            System.out.println("--- item match---： packName="+packageName+" className="+className+" methodName="+methodName);
-//            System.out.println("packageConstraint="+packageConstraint+" classConstraint="+classConstraint+" methodConstraint="+methodConstraint);
             if (packageConstraint != null && packageConstraint.length() > 0 && !Pattern.compile(packageConstraint).matcher(packageName).matches()){
-               // System.out.println("package not match");
                 return false;
             }
             if (classConstraint != null && classConstraint.length() > 0 && !Pattern.compile(classConstraint).matcher(className).matches()){
-                //System.out.println("class not match");
                 return false;
             }
             if (methodConstraint != null && methodConstraint.length() > 0 && !Pattern.compile(methodConstraint).matcher(methodName).matches()){
-                //System.out.println("method not match");
                 return false;
             }
             return true;
@@ -139,6 +133,7 @@ public class ScriptConfigVal {
 
         public String packageConstraint;
 
+        //仅类名，不包含包前缀
         public String classConstraint;
 
         public String methodConstraint;

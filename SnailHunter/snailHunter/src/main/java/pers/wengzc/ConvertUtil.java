@@ -38,7 +38,7 @@ public class ConvertUtil {
                     if (file.getAbsolutePath().endsWith(SdkConstants.DOT_CLASS)){
                         String className = file.getAbsolutePath().substring(dirPath.length() + 1, file.getAbsolutePath().length() - SdkConstants.DOT_CLASS.length()).replaceAll(Matcher.quoteReplacement(File.separator), ".");
                         if (classNames.contains(className)){
-                            throw new RuntimeException("重复的类定义");
+                            throw new RuntimeException("重复的类定义:"+className);
                         }
                         classNames.add(className);
                     }
@@ -57,7 +57,7 @@ public class ConvertUtil {
                     if (className.endsWith(SdkConstants.DOT_CLASS)){
                         className = className.substring(0, className.length() - SdkConstants.DOT_CLASS.length()).replaceAll("/", ".");
                         if (classNames.contains(className)){
-                            throw new RuntimeException("重复的类定义");
+                            throw new RuntimeException("重复的类定义:"+className);
                         }
                         classNames.add(className);
                     }
