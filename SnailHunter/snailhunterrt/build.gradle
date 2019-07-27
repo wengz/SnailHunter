@@ -5,7 +5,7 @@ android {
     compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 18
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
@@ -34,7 +34,7 @@ dependencies {
 }
 
 group = 'pers.wengzc'
-version = '0.0.31'
+version = '0.0.32'
 uploadArchives {
     repositories {
         mavenDeployer {
