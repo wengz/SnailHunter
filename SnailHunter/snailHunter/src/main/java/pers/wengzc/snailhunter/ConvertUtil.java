@@ -1,4 +1,4 @@
-package pers.wengzc;
+package pers.wengzc.snailhunter;
 
 import com.android.SdkConstants;
 import com.android.build.api.transform.DirectoryInput;

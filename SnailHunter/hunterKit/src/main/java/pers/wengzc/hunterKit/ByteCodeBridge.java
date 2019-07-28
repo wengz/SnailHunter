@@ -1,7 +1,6 @@
-package pers.wengzc.hunterKit;
+package pers.wengzc.hunterkit;
 
 import android.os.Process;
-import android.util.Log;
 
 /**
  * @author wengzc

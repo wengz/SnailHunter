@@ -1,4 +1,4 @@
-package pers.wengzc;
+package pers.wengzc.snailhunter;
 
 /**
  * @author wengzc

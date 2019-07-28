@@ -1,6 +1,6 @@
-package pers.wengzc.snailhunter;
+package pers.wengzc.snailhuntertest;
 
-import pers.wengzc.hunterKit.HunterTarget;
+import pers.wengzc.hunterkit.HunterTarget;
 
 public class ExtendViewMethodSignature extends ViewMethodSignature implements TestInterface{
 

@@ -1,6 +1,5 @@
-package pers.wengzc;
+package pers.wengzc.snailhunter;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,7 +9,7 @@ import javassist.ClassPool;
 import javassist.CtClass;
 import javassist.CtMethod;
 import javassist.NotFoundException;
-import pers.wengzc.hunterKit.HunterTarget;
+import pers.wengzc.hunterkit.HunterTarget;
 
 public class AnnotationConfigHelper {
 

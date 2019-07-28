@@ -30,11 +30,11 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'pers.wengzc:hunterKit:0.0.18'
+    implementation 'pers.wengzc:hunterkit:0.0.19'
 }
 
 group = 'pers.wengzc'
-version = '0.0.32'
+version = '0.0.33'
 uploadArchives {
     repositories {
         mavenDeployer {

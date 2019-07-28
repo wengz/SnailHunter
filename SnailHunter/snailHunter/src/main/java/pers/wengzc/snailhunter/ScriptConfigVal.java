@@ -1,7 +1,5 @@
-package pers.wengzc;
+package pers.wengzc.snailhunter;
 
-
-import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
 

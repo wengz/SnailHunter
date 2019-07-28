@@ -1,4 +1,4 @@
-package pers.wengzc.snailhunter;
+package pers.wengzc.snailhuntertest;
 
 import android.app.Application;
 

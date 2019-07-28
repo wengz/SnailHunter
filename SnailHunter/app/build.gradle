@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
-apply plugin: 'pers.wengzc.snailHunter'
+apply plugin: 'pers.wengzc.snailhunter'
 
 
 android {
     compileSdkVersion 28
     defaultConfig {
-        applicationId "pers.wengzc.snailhunter"
+        applicationId "pers.wengzc.snailhuntertest"
         minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
@@ -40,8 +40,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation 'pers.wengzc:snailhunterrt:0.0.31'
     implementation 'org.apache.commons:commons-lang3:3.9'
+    implementation 'pers.wengzc:snailhunterrt:0.0.33'
     //implementation project(':testlib')
 }
 

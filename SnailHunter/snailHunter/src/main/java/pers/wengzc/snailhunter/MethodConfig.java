@@ -1,10 +1,10 @@
-package pers.wengzc;
+package pers.wengzc.snailhunter;
 
 import com.alibaba.fastjson.JSON;
 
 import org.objectweb.asm.tree.MethodNode;
 
-import pers.wengzc.hunterKit.Action;
+import pers.wengzc.hunterkit.Action;
 
 public class MethodConfig {
 

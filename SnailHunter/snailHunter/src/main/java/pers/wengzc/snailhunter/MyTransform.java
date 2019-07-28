@@ -1,8 +1,6 @@
-package pers.wengzc;
+package pers.wengzc.snailhunter;
 
-import com.android.build.api.transform.DirectoryInput;
 import com.android.build.api.transform.Format;
-import com.android.build.api.transform.JarInput;
 import com.android.build.api.transform.QualifiedContent;
 import com.android.build.api.transform.Transform;
 import com.android.build.api.transform.TransformException;
@@ -11,21 +9,14 @@ import com.android.build.api.transform.TransformInvocation;
 import com.android.build.api.transform.TransformOutputProvider;
 import com.android.build.gradle.BaseExtension;
 import com.android.build.gradle.internal.pipeline.TransformManager;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 
-import org.apache.commons.io.FileUtils;
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.internal.impldep.org.testng.internal.annotations.AnnotationHelper;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AbstractInsnNode;
-import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
@@ -37,7 +28,6 @@ import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,12 +42,11 @@ import java.util.zip.ZipOutputStream;
 
 import javassist.ClassPool;
 import javassist.CtClass;
-import javassist.CtMethod;
 import javassist.bytecode.AccessFlag;
-import pers.wengzc.hunterKit.Action;
-import pers.wengzc.hunterKit.AndroidUtil;
-import pers.wengzc.hunterKit.ByteCodeBridge;
-import pers.wengzc.hunterKit.WriggleInfo;
+import pers.wengzc.hunterkit.Action;
+import pers.wengzc.hunterkit.AndroidUtil;
+import pers.wengzc.hunterkit.ByteCodeBridge;
+import pers.wengzc.hunterkit.WriggleInfo;
 
 public class MyTransform extends Transform{
 
@@ -179,13 +168,13 @@ public class MyTransform extends Transform{
             Iterator<MethodNode> it = classNode.methods.iterator();
 
             String packageName = AnnotationConfigHelper.getClassPackageName(className);
-            ScriptConfigVal.ConfigItem  classExcludeConfigItem = configVal.matchExclude(packageName, className, null);
+            ScriptConfigVal.ConfigItem classExcludeConfigItem = configVal.matchExclude(packageName, className, null);
             //类的脚本配置项排除
             if (classExcludeConfigItem == null){
                 while (it.hasNext()){
                     MethodNode mnd = it.next();
                     String methodName = mnd.name;
-                    ScriptConfigVal.ConfigItem  methodExcludeConfigItem = configVal.matchExclude(packageName, className, methodName);
+                    ScriptConfigVal.ConfigItem methodExcludeConfigItem = configVal.matchExclude(packageName, className, methodName);
                     //方法的脚本配置项排除
                     if (methodExcludeConfigItem == null){
                         boolean matched = false;
@@ -202,7 +191,7 @@ public class MyTransform extends Transform{
 
                         //方法脚本配置项包含
                         if (!matched){
-                            ScriptConfigVal.ConfigItem  methodIncludeConfigItem = configVal.matchInclude(packageName, className, methodName);
+                            ScriptConfigVal.ConfigItem methodIncludeConfigItem = configVal.matchInclude(packageName, className, methodName);
                             if (methodIncludeConfigItem != null){
                                 System.out.println("---脚本配置成功! 进行字节码修改, 类名="+className+", 方法名="+mnd.name);
                                 transformMethod(packageName, classNode, mnd, methodIncludeConfigItem.getMethodManipulateArg());

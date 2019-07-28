@@ -4,12 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import pers.wengzc.hunterKit.WriggleInfo;
-import pers.wengzc.hunterKit.WriggleInfoHandler;
+import pers.wengzc.hunterkit.WriggleInfo;
+import pers.wengzc.hunterkit.WriggleInfoHandler;
 import pers.wengzc.snailhunterrt.ISnailHunterService;
 import pers.wengzc.snailhunterrt.SnailHunterService;
 
-import pers.wengzc.hunterKit.ByteCodeBridge;
+import pers.wengzc.hunterkit.ByteCodeBridge;
 
 /**
  * @author wengzc

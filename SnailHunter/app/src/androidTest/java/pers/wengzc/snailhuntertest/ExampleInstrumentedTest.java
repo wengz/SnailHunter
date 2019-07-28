@@ -1,4 +1,4 @@
-package pers.wengzc.snailhunter;
+package pers.wengzc.snailhuntertest;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;

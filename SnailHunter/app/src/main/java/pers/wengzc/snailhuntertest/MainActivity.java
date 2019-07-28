@@ -1,4 +1,4 @@
-package pers.wengzc.snailhunter;
+package pers.wengzc.snailhuntertest;
 
 import android.content.Intent;
 import android.provider.Settings;
@@ -13,7 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Random;
 
-import pers.wengzc.hunterKit.HunterTarget;
+import pers.wengzc.hunterkit.HunterTarget;
 
 public class MainActivity extends AppCompatActivity {
 
