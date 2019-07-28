@@ -22,7 +22,8 @@ public class MyPlugin implements Plugin<Project> {
             myTransform.setConfigVal(configVal);
 
         }catch (Exception e){
-            System.out.println("MyPlugin apply(Project project),e="+e);
+            System.out.println("SnailHunter Plugin 应用失败");
+            e.printStackTrace();
         }
     }
 }

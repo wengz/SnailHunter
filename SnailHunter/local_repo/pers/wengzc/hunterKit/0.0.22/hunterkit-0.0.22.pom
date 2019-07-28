@@ -3,8 +3,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>pers.wengzc</groupId>
-  <artifactId>hunterKit</artifactId>
-  <version>0.0.18</version>
+  <artifactId>hunterkit</artifactId>
+  <version>0.0.22</version>
   <dependencies>
     <dependency>
       <groupId>com.google.android</groupId>

@@ -15,4 +15,6 @@ interface ISnailHunterService {
     void registerNewSnailWatcher(ISnailWatcher newWatcher);
 
     void unregisterNewSnailWatcher(ISnailWatcher newWatcher);
+
+    void clear();
 }

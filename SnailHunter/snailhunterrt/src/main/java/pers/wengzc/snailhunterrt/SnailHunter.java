@@ -4,8 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import pers.wengzc.hunterkit.WriggleInfo;
-import pers.wengzc.hunterkit.WriggleInfoHandler;
+import pers.wengzc.hunterkit.MethodInfoHandler;
 import pers.wengzc.snailhunterrt.ISnailHunterService;
 import pers.wengzc.snailhunterrt.SnailHunterService;
 
@@ -16,29 +15,67 @@ import pers.wengzc.hunterkit.ByteCodeBridge;
  */
 public class SnailHunter {
 
+    private static final String HUNTER_PROCESS_NAME = "snailhunter";
+
     public static Context sContext;
 
     private static  ConnectServiceFuture sConnectServiceFuture;
 
+    public static boolean isHunterProcess (Context context){
+        String processName = ProcessUtils.myProcessName(context);
+        return processName != null && processName.endsWith(":" + HUNTER_PROCESS_NAME);
+    }
+
     public static void install (Context context){
+        if (isHunterProcess(context)){
+            return;
+        }
+
         sContext = context;
         connectServiceIfNot();
 
-        ByteCodeBridge.sWriggleInfoHandler = new WriggleInfoHandler() {
-            @Override
-            public void handleWriggleInfo(final WriggleInfo wriggleInfo) {
+        ByteCodeBridge.sMethodInfoHandler = new MethodInfoHandler() {
 
+            @Override
+            public void handleMethodRuntimeInfo(final int processId, final long threadId, final String threadName,
+                                                final String packageName,
+                                                final String className,
+                                                final String methodName,
+                                                final long startTime,
+                                                final long finishTime,
+                                                final boolean isMainThread,
+                                                final boolean mainThreadConstraint,
+                                                final long timeConstraint) {
                 HunterReportHandler.getInstance().post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d("xxx", "尝试获取 ISnailHunterService");
+
+                        //只检查主线程，非主线程运行状态不捕捉
+                        if (mainThreadConstraint && !isMainThread ){
+                            return;
+                        }
+
+                        //时间约束
+                        long costTime = finishTime - startTime;
+                        if (costTime < timeConstraint * 1000000){
+                            return;
+                        }
+
+                        //Log.d("xxx", "尝试获取 ISnailHunterService");
                         ISnailHunterService snailHunterService = getServiceSyncMayNull();
-                        Log.d("xxx", "获取到ISnailHunterService");
+                        //Log.d("xxx", "获取到ISnailHunterService");
                         if (snailHunterService != null){
                             try{
-                                Log.d("xxx", "远程服务调用 snailHunterService.catchNewSnail");
-                                Snail rtSnail = new Snail(wriggleInfo.processId, wriggleInfo.threadId, wriggleInfo.threadName, wriggleInfo.packageName, wriggleInfo.className, wriggleInfo.methodName,
-                                        wriggleInfo.isMainThread, wriggleInfo.timeConstraint, wriggleInfo.executeTime);
+                                //Log.d("xxx", "远程服务调用 snailHunterService.catchNewSnail");
+                                Snail rtSnail = new Snail( processId,  threadId,  threadName,
+                                         packageName,
+                                         className,
+                                         methodName,
+                                         startTime,
+                                         finishTime,
+                                         isMainThread,
+                                         mainThreadConstraint,
+                                         timeConstraint);
                                 snailHunterService.catchNewSnail(rtSnail);
                             }catch (Exception e){
                                 e.printStackTrace();
@@ -47,6 +84,7 @@ public class SnailHunter {
                     }
                 });
             }
+
         };
 
     }

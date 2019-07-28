@@ -37,16 +37,59 @@ public class SnailHunterService extends Service {
 
     private final RemoteCallbackList<ISnailWatcher> mSnailWatcher = new RemoteCallbackList<>();
 
+    private void addNewSnail (Snail snail){
+        snail.leafInvoke = true;
+        for (Snail sn : mSnails){
+            if (sn.leafInvoke){
+                if (snail.wrap(sn)){
+                    snail.leafInvoke = false;
+                    sn.leafInvoke = true;
+                }
+            }
+        }
+        mSnails.add(0, snail);
+    }
+
     private ISnailHunterService.Stub mSnailHunterService = new ISnailHunterService.Stub() {
         @Override
-        public void catchNewSnail(Snail snail) throws RemoteException {
-            mSnails.add(0, snail);
+        public void catchNewSnail(Snail snail)  {
+//            Log.d("xxx", "catchNewSnail: threadid="+Thread.currentThread().getId()+
+//                    "Snail="+snail);
+
+            //只检查主线程，非主线程运行状态不捕捉
+            if (snail.mainThreadConstraint && !snail.isMainThread ){
+                return;
+            }
+
+            long costTime = snail.finishTime - snail.startTime;
+            if (costTime < snail.timeConstraint * 1000000){
+                return;
+            }
+
+            snail.executeTime = costTime;
+            addNewSnail(snail);
             if (snail.timeConstraint >= 0){
                 //时间约束大于等于0的进行通知栏提醒
                 Notifier.notifyNewSnail(getApplicationContext());
             }else{
                 //时间约束小于0的进行logcat记录
                 Log.d(Constant.TAG, ">>>SnailHunterService#catchNewSnail>>>"+snail);
+            }
+
+            notifySnailDataChanged(snail);
+        }
+
+        private void notifySnailDataChanged (Snail snail){
+            try{
+                int count = mSnailWatcher.beginBroadcast();
+                for (int i = 0; i < count; i++){
+                    ISnailWatcher sw = mSnailWatcher.getBroadcastItem(i);
+                    sw.onCatchNewSnail(snail);
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }finally {
+                mSnailWatcher.finishBroadcast();
             }
         }
 
@@ -63,6 +106,12 @@ public class SnailHunterService extends Service {
         @Override
         public void unregisterNewSnailWatcher(ISnailWatcher watcher) throws RemoteException {
             mSnailWatcher.unregister(watcher);
+        }
+
+        @Override
+        public void clear() throws RemoteException {
+            mSnails.clear();
+            notifySnailDataChanged(null);
         }
     };
 

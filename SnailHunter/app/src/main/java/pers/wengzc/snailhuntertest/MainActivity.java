@@ -1,6 +1,7 @@
 package pers.wengzc.snailhuntertest;
 
 import android.content.Intent;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -20,6 +21,8 @@ public class MainActivity extends AppCompatActivity {
     private Button btnUi;
     private Button btnNotUi;
 
+    private Handler handler;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,13 +30,20 @@ public class MainActivity extends AppCompatActivity {
 
         btnUi =  findViewById(R.id.btn_ui);
         btnNotUi =  findViewById(R.id.btn_not_ui);
-
+        handler = new Handler();
 
         btnUi.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                longTimeWork();
+
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        longTimeWork();
+                    }
+                }, 5000);
+
             }
         });
 
@@ -42,19 +52,38 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                new Thread(){
+                handler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        longTimeWork();
+                        longTimeWork2();
                     }
-                }.start();
+                }, 5000);
+
             }
         });
+    }
+
+    private void wrapperMethod1 (){
+        longTimeWork();
+    }
+
+    private void wrapperMethod2 (){
+        longTimeWork();
+        Log.d("xxx", "wrapperMethod2: ~~~");
+        longTimeWork2();
     }
 
     private void longTimeWork (){
         try{
             Thread.sleep(300);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void longTimeWork2 (){
+        try{
+            Thread.sleep(350);
         }catch (Exception e){
             e.printStackTrace();
         }

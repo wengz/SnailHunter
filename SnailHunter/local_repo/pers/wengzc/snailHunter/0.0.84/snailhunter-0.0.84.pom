@@ -3,8 +3,8 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <groupId>pers.wengzc</groupId>
-  <artifactId>snailHunter</artifactId>
-  <version>0.0.68</version>
+  <artifactId>snailhunter</artifactId>
+  <version>0.0.84</version>
   <dependencies>
     <dependency>
       <groupId>com.android.tools.build</groupId>
@@ -74,8 +74,8 @@
     </dependency>
     <dependency>
       <groupId>pers.wengzc</groupId>
-      <artifactId>hunterKit</artifactId>
-      <version>0.0.18</version>
+      <artifactId>hunterkit</artifactId>
+      <version>0.0.22</version>
       <scope>runtime</scope>
     </dependency>
   </dependencies>

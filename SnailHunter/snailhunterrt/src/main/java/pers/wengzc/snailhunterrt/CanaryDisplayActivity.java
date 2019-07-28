@@ -6,11 +6,13 @@ import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.RemoteException;
+import android.os.strictmode.CleartextNetworkViolation;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.Button;
 
 import pers.wengzc.snailhunterrt.ISnailHunterService;
 import pers.wengzc.snailhunterrt.ISnailWatcher;
@@ -30,6 +32,7 @@ public class CanaryDisplayActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     private DisplayAdapter mAdapter;
+    private Button mClearBtn;
 
     private ISnailHunterService mSnailHunterService = null;
 
@@ -65,8 +68,25 @@ public class CanaryDisplayActivity extends AppCompatActivity {
     private void fetchDataAndUpdateView (){
         if (mSnailHunterService != null){
             try {
-                List<Snail> newData = mSnailHunterService.getAllSnail();
-                mAdapter.updateData(newData);
+                final List<Snail> newData = mSnailHunterService.getAllSnail();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        mAdapter.updateData(newData);
+                    }
+                });
+
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void clearData (){
+        mAdapter.updateData(Collections.<Snail>emptyList());
+        if (mSnailHunterService != null){
+            try {
+                mSnailHunterService.clear();
             } catch (RemoteException e) {
                 e.printStackTrace();
             }
@@ -82,6 +102,14 @@ public class CanaryDisplayActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         mAdapter = new DisplayAdapter(Collections.<Snail>emptyList());
         mRecyclerView.setAdapter(mAdapter);
+
+        mClearBtn = findViewById(R.id.clear_btn);
+        mClearBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                clearData();
+            }
+        });
 
         Intent intent = new Intent(this, SnailHunterService.class);
         bindService(intent, mServiceConnection, BIND_AUTO_CREATE);

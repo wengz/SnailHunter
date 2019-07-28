@@ -9,18 +9,33 @@ public class ByteCodeBridge {
 
     public static final String TAG = "SnailHunter";
 
-    public static WriggleInfoHandler sWriggleInfoHandler;
+    public static MethodInfoHandler sMethodInfoHandler;
 
-    public static void handle(WriggleInfo wriggleInfo){
-        if (sWriggleInfoHandler != null){
+    public static void handle(
+                              String packageName,
+                              String className,
+                              String methodName,
+                              long startTime,
+                              long finishTime,
+                              boolean mainThreadConstraint,
+                              long timeConstraint
+                              ){
+        if (sMethodInfoHandler != null){
             int processId = Process.myPid();
             Thread curThread = Thread.currentThread();
             long threadId = curThread.getId();
             String threadName = curThread.getName();
-            wriggleInfo.processId = processId;
-            wriggleInfo.threadId = threadId;
-            wriggleInfo.threadName = threadName;
-            sWriggleInfoHandler.handleWriggleInfo(wriggleInfo);
+            boolean isMainThread = AndroidUtil.isInUIThread();
+
+            sMethodInfoHandler.handleMethodRuntimeInfo( processId,  threadId,  threadName,
+                     packageName,
+                     className,
+                     methodName,
+                     startTime,
+                     finishTime,
+                     isMainThread,
+                     mainThreadConstraint,
+                     timeConstraint);
         }
     }
 

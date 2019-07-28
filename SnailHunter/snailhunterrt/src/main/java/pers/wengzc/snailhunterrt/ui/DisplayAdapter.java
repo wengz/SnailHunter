@@ -11,6 +11,7 @@ import android.widget.TextView;
 import pers.wengzc.snailhunterrt.R;
 import pers.wengzc.snailhunterrt.Snail;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -23,20 +24,14 @@ public class DisplayAdapter extends RecyclerView.Adapter<DisplayAdapter.DisplayV
 
     public DisplayAdapter(List<Snail> data){
         this.mData = data;
-        ensureDataNotNull();
     }
 
     public void updateData (List<Snail> data){
-        this.mData = data;
-        ensureDataNotNull();
+        this.mData = new ArrayList<>();
+        this.mData.addAll(data);
         notifyDataSetChanged();
     }
 
-    private void ensureDataNotNull (){
-        if (mData == null){
-            mData = Collections.emptyList();
-        }
-    }
 
     @NonNull
     @Override
@@ -67,24 +62,28 @@ public class DisplayAdapter extends RecyclerView.Adapter<DisplayAdapter.DisplayV
 
         public void updateForData (Snail snail){
             StringBuilder sb = new StringBuilder();
-            sb.append(elementToHtmlString("进程号:"+snail.processId));
-            sb.append(elementToHtmlString("线程号:"+snail.threadId));
-            sb.append(elementToHtmlString("线程名:"+snail.threadName));
-            sb.append(elementToHtmlString("包名:"+snail.packageName));
-            sb.append(elementToHtmlString("类名:"+snail.className));
-            sb.append(elementToHtmlString("方法名:"+snail.methodName));
-            sb.append(elementToHtmlString("是否主线程:"+snail.isMainThread));
-            sb.append(elementToHtmlString("时间限制(ms):"+snail.timeConstraint));
-            sb.append(elementToHtmlString("实际运行时间(ms):"+snail.executeTime));
+            String fontColor = snail.leafInvoke ? FONT_COLOT_LEAF_INVOKE : FONT_COLOT_NORMAL;
+            sb.append(elementToHtmlString(fontColor, "进程号:"+snail.processId));
+            sb.append(elementToHtmlString(fontColor,"线程号:"+snail.threadId));
+            sb.append(elementToHtmlString(fontColor,"线程名:"+snail.threadName));
+            sb.append(elementToHtmlString(fontColor,"包名:"+snail.packageName));
+            sb.append(elementToHtmlString(fontColor,"类名:"+snail.className));
+            sb.append(elementToHtmlString(fontColor,"方法名:"+snail.methodName));
+            sb.append(elementToHtmlString(fontColor,"是否主线程:"+snail.isMainThread));
+            sb.append(elementToHtmlString(fontColor,"时间限制(ms):"+snail.timeConstraint));
+            sb.append(elementToHtmlString(fontColor,"实际运行时间(ms):"+(snail.executeTime/1000000)));
             mTextView.setText(Html.fromHtml(sb.toString()));
         }
 
         public static final String SEPARATOR = "\r\n";
 
-        private String elementToHtmlString (String element){
+        private static final String FONT_COLOT_NORMAL = "#DDDDDD";
+        private static final String FONT_COLOT_LEAF_INVOKE = "#FF0066";
+
+        private String elementToHtmlString (String fontColor, String element){
             String htmlString = element.replaceAll(SEPARATOR, "<br/>");
             htmlString += "<br/>";
-            htmlString = String.format("<font color='#ffff00'>%s</font>", htmlString);
+            htmlString = String.format("<font color='"+fontColor+"'>%s</font>", htmlString);
             htmlString += "<br/>";
             return htmlString;
         }

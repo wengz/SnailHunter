@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>pers.wengzc</groupId>
   <artifactId>snailhunterrt</artifactId>
-  <version>0.0.18</version>
+  <version>0.0.52</version>
   <packaging>aar</packaging>
   <dependencies>
     <dependency>
@@ -21,8 +21,8 @@
     </dependency>
     <dependency>
       <groupId>pers.wengzc</groupId>
-      <artifactId>hunterKit</artifactId>
-      <version>0.0.18</version>
+      <artifactId>hunterkit</artifactId>
+      <version>0.0.22</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>

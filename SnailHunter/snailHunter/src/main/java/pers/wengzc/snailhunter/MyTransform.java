@@ -46,7 +46,6 @@ import javassist.bytecode.AccessFlag;
 import pers.wengzc.hunterkit.Action;
 import pers.wengzc.hunterkit.AndroidUtil;
 import pers.wengzc.hunterkit.ByteCodeBridge;
-import pers.wengzc.hunterkit.WriggleInfo;
 
 public class MyTransform extends Transform{
 
@@ -138,9 +137,11 @@ public class MyTransform extends Transform{
 
     private boolean isNeedInsertClass(String className) {
         if (className.startsWith("pers.wengzc.snailhunterrt")
-            || className.startsWith("pers.wengzc.hunterKit")
+            || className.startsWith("pers.wengzc.hunterkit")
             || className.startsWith("android")
-        ){
+            || className.startsWith("androidx")
+            || className.startsWith("java")
+            || className.startsWith("javax")){
             return false;
         }
         return true;
@@ -181,7 +182,7 @@ public class MyTransform extends Transform{
                         for (MethodConfig mc : classMethodConfig){
                             if (mc.match(mnd)){
                                 if (mc.config.action == Action.Include){
-                                    System.out.println("---注解匹配成功! 进行字节码修改, 类名="+className+", 方法名="+mnd.name);
+                                    //System.out.println("---注解匹配成功! 进行字节码修改, 类名="+className+", 方法名="+mnd.name);
                                     transformMethod(packageName, classNode, mnd, mc.getMethodManipulateArg());
                                 }
                                 matched = true;
@@ -193,7 +194,7 @@ public class MyTransform extends Transform{
                         if (!matched){
                             ScriptConfigVal.ConfigItem methodIncludeConfigItem = configVal.matchInclude(packageName, className, methodName);
                             if (methodIncludeConfigItem != null){
-                                System.out.println("---脚本配置成功! 进行字节码修改, 类名="+className+", 方法名="+mnd.name);
+                                //System.out.println("---脚本配置成功! 进行字节码修改, 类名="+className+", 方法名="+mnd.name);
                                 transformMethod(packageName, classNode, mnd, methodIncludeConfigItem.getMethodManipulateArg());
                             }
                         }
@@ -227,14 +228,10 @@ public class MyTransform extends Transform{
         }
 
         InsnList codeInsertStart = new InsnList();
-        codeInsertStart.add(new LdcInsnNode(0L));
-        codeInsertStart.add(new VarInsnNode(Opcodes.LSTORE, orgLocalVarSize));
-        codeInsertStart.add(new VarInsnNode(Opcodes.LLOAD, orgLocalVarSize));
         codeInsertStart.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
                 "java/lang/System",
-                "currentTimeMillis",
+                "nanoTime",
                 "()J", false));
-        codeInsertStart.add(new InsnNode(Opcodes.LSUB));
         codeInsertStart.add(new VarInsnNode(Opcodes.LSTORE, orgLocalVarSize));
 
         List<AbstractInsnNode> finishInsn = new ArrayList<AbstractInsnNode>();
@@ -253,51 +250,25 @@ public class MyTransform extends Transform{
             AbstractInsnNode insn = finishInsnIt.next();
 
             InsnList codeInsertEnd = new InsnList();
-            LabelNode end = new LabelNode();
-
-            if (manipulateArg.justMainThread){//仅主线程追踪,非主线程直接跳转至指令尾
-                codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
-                        util_class_name,
-                        "isInUIThread",
-                        "()Z", false));
-                codeInsertEnd.add(new JumpInsnNode(Opcodes.IFEQ, end));
-            }
-
-            codeInsertEnd.add(new VarInsnNode(Opcodes.LLOAD, orgLocalVarSize));
-            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
-                    "java/lang/System",
-                    "currentTimeMillis",
-                    "()J", false));
-            codeInsertEnd.add(new InsnNode(Opcodes.LADD));
-            codeInsertEnd.add(new VarInsnNode(Opcodes.LSTORE, orgLocalVarSize));
-
-            //时间阈值比较
-            codeInsertEnd.add(new VarInsnNode(Opcodes.LLOAD, orgLocalVarSize));
-            codeInsertEnd.add(new LdcInsnNode(new Long(manipulateArg.timeConstraint)));
-            codeInsertEnd.add(new InsnNode(Opcodes.LCMP));
-            codeInsertEnd.add(new JumpInsnNode(Opcodes.IFLE, end));
 
             String byteCodeBrudgeInternalName = Type.getInternalName(ByteCodeBridge.class);
-            String wriggleInfoInternalName = Type.getInternalName(WriggleInfo.class);
-
-            //结果提交处理
-            codeInsertEnd.add(new TypeInsnNode(Opcodes.NEW, wriggleInfoInternalName));
-            codeInsertEnd.add(new InsnNode(Opcodes.DUP));
             codeInsertEnd.add(new LdcInsnNode(packageName));
             codeInsertEnd.add(new LdcInsnNode(className));
             codeInsertEnd.add(new LdcInsnNode(methodName));
-            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
-                    util_class_name,
-                    "isInUIThread",
-                    "()Z", false));
-            codeInsertEnd.add(new LdcInsnNode(new Long(manipulateArg.timeConstraint)));
+            //开始时间
             codeInsertEnd.add(new VarInsnNode(Opcodes.LLOAD, orgLocalVarSize));
-            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, wriggleInfoInternalName, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZJJ)V", false));
+            //结束时间
+            codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
+                    "java/lang/System",
+                    "nanoTime",
+                    "()J", false));
+            codeInsertEnd.add(new LdcInsnNode(new Boolean(manipulateArg.justMainThread)));
+            codeInsertEnd.add(new LdcInsnNode(new Long(manipulateArg.timeConstraint)));
+            //codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, wriggleInfoInternalName, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZJJ)V", false));
             codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
                     byteCodeBrudgeInternalName,
                     "handle",
-                    "(Lpers/wengzc/hunterKit/WriggleInfo;)V", false));
-            codeInsertEnd.add(end);
+                    "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;JJZJ)V", false));
 
             insnList.insertBefore(insn, codeInsertEnd);
         }
