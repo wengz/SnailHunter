@@ -57,26 +57,26 @@ public class SnailHunterService extends Service {
 //                    "Snail="+snail);
 
             //只检查主线程，非主线程运行状态不捕捉
-            if (snail.mainThreadConstraint && !snail.isMainThread ){
-                return;
-            }
-
-            long costTime = snail.finishTime - snail.startTime;
-            if (costTime < snail.timeConstraint * 1000000){
-                return;
-            }
-
-            snail.executeTime = costTime;
-            addNewSnail(snail);
-            if (snail.timeConstraint >= 0){
-                //时间约束大于等于0的进行通知栏提醒
-                Notifier.notifyNewSnail(getApplicationContext());
-            }else{
-                //时间约束小于0的进行logcat记录
-                Log.d(Constant.TAG, ">>>SnailHunterService#catchNewSnail>>>"+snail);
-            }
-
-            notifySnailDataChanged(snail);
+//            if (snail.mainThreadConstraint && !snail.isMainThread ){
+//                return;
+//            }
+//
+//            long costTime = snail.finishTime - snail.startTime;
+//            if (costTime < snail.timeConstraint * 1000000){
+//                return;
+//            }
+//
+//            snail.executeTime = costTime;
+//            addNewSnail(snail);
+//            if (snail.timeConstraint >= 0){
+//                //时间约束大于等于0的进行通知栏提醒
+//                Notifier.notifyNewSnail(getApplicationContext());
+//            }else{
+//                //时间约束小于0的进行logcat记录
+//                Log.d(Constant.TAG, ">>>SnailHunterService#catchNewSnail>>>"+snail);
+//            }
+//
+//            notifySnailDataChanged(snail);
         }
 
         private void notifySnailDataChanged (Snail snail){

@@ -65,9 +65,7 @@ public class ConnectServiceFuture implements Future<ISnailHunterService>, Servic
         Log.d("xxx", "onServiceDisconnected: ");
         mResultReceived = true;
         mResult = null;
-        if (enterWaiting){
-            notifyAll();
-        }
+        notifyAll();
     }
 
     @Override

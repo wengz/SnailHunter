@@ -51,17 +51,18 @@ public class SnailHunter {
                     public void run() {
 
                         //只检查主线程，非主线程运行状态不捕捉
-                        if (mainThreadConstraint && !isMainThread ){
-                            return;
-                        }
-
-                        //时间约束
-                        long costTime = finishTime - startTime;
-                        if (costTime < timeConstraint * 1000000){
-                            return;
-                        }
+//                        if (mainThreadConstraint && !isMainThread ){
+//                            return;
+//                        }
+//
+//                        //时间约束
+//                        long costTime = finishTime - startTime;
+//                        if (costTime < timeConstraint * 1000000){
+//                            return;
+//                        }
 
                         //Log.d("xxx", "尝试获取 ISnailHunterService");
+                        Log.d("xxx", "run: className="+className+" methodName="+methodName);
                         ISnailHunterService snailHunterService = getServiceSyncMayNull();
                         //Log.d("xxx", "获取到ISnailHunterService");
                         if (snailHunterService != null){

@@ -37,12 +37,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        longTimeWork();
-                    }
-                }, 5000);
+                Log.d("xxx", "onClick: I'm alive");
 
             }
         });
@@ -51,16 +46,34 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-
-                handler.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        longTimeWork2();
-                    }
-                }, 5000);
-
+                startLoopTest();
             }
         });
+    }
+
+    private void startLoopTest (){
+        new Thread(){
+
+            @Override
+            public void run() {
+                while (true){
+                    timeMethod();
+                    try{
+                        Thread.sleep(10);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+
+                }
+            }
+
+        }.start();
+    }
+
+    private long timeMethod (){
+        long now = System.currentTimeMillis();
+        Log.d("xxx", "timeMethod: "+now);
+        return now;
     }
 
     private void wrapperMethod1 (){
