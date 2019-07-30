@@ -9,8 +9,8 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
-            <option value="$PROJECT_DIR$/hunterKit" />
-            <option value="$PROJECT_DIR$/snailHunter" />
+            <option value="$PROJECT_DIR$/hunterkit" />
+            <option value="$PROJECT_DIR$/snailhunter" />
             <option value="$PROJECT_DIR$/snailhunterrt" />
             <option value="$PROJECT_DIR$/testlib" />
           </set>

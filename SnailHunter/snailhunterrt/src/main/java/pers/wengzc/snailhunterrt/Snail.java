@@ -96,7 +96,8 @@ public class Snail  implements Parcelable{
                 " finishTime(ms)="+(finishTime/1000000)+
                 " isMainThread="+isMainThread+
                 " mainThreadConstraint="+mainThreadConstraint+
-                " timeConstraint(ms)="+timeConstraint;
+                " timeConstraint(ms)="+timeConstraint+
+                " executeTime=(ms)"+(executeTime/1000000f);
     }
 
     @Override

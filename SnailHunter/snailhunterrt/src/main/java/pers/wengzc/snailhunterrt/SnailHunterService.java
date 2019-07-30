@@ -26,6 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static android.os.Build.VERSION.SDK_INT;
 import static android.os.Build.VERSION_CODES.HONEYCOMB;
@@ -33,7 +34,7 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 
 public class SnailHunterService extends Service {
 
-    private List<Snail> mSnails = new LinkedList<>();
+    private List<Snail> mSnails = new CopyOnWriteArrayList<>();
 
     private final RemoteCallbackList<ISnailWatcher> mSnailWatcher = new RemoteCallbackList<>();
 
@@ -53,14 +54,14 @@ public class SnailHunterService extends Service {
     private ISnailHunterService.Stub mSnailHunterService = new ISnailHunterService.Stub() {
         @Override
         public void catchNewSnail(Snail snail)  {
-            Log.d("xxx", "catchNewSnail: threadid="+Thread.currentThread().getId()+
-                    "Snail="+snail);
+            Log.d(Constant.TAG, "服务端函数信息处理");
 
             //只检查主线程，非主线程运行状态不捕捉
             if (snail.mainThreadConstraint && !snail.isMainThread ){
                 return;
             }
 
+            //时间约束
             long costTime = snail.finishTime - snail.startTime;
             if (costTime < snail.timeConstraint * 1000000){
                 return;
@@ -68,14 +69,11 @@ public class SnailHunterService extends Service {
 
             snail.executeTime = costTime;
             addNewSnail(snail);
+            Log.d(Constant.TAG, ">>>函数运行时报告>>>"+snail);
             if (snail.timeConstraint >= 0){
                 //时间约束大于等于0的进行通知栏提醒
                 Notifier.notifyNewSnail(getApplicationContext());
-            }else{
-                //时间约束小于0的进行logcat记录
-                Log.d(Constant.TAG, ">>>SnailHunterService#catchNewSnail>>>"+snail);
             }
-
             notifySnailDataChanged(snail);
         }
 

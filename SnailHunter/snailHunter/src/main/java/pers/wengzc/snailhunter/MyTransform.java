@@ -140,8 +140,8 @@ public class MyTransform extends Transform{
             || className.startsWith("pers.wengzc.hunterkit")
             || className.startsWith("android")
             || className.startsWith("androidx")
-            || className.startsWith("java")
-            || className.startsWith("javax")){
+            /*|| className.startsWith("java")
+            || className.startsWith("javax")*/){
             return false;
         }
         return true;
@@ -182,7 +182,7 @@ public class MyTransform extends Transform{
                         for (MethodConfig mc : classMethodConfig){
                             if (mc.match(mnd)){
                                 if (mc.config.action == Action.Include){
-                                    //System.out.println("---注解匹配成功! 进行字节码修改, 类名="+className+", 方法名="+mnd.name);
+                                    System.out.println("---注解匹配成功! 进行字节码修改, 类名="+className+", 方法名="+mnd.name);
                                     transformMethod(packageName, classNode, mnd, mc.getMethodManipulateArg());
                                 }
                                 matched = true;
@@ -194,7 +194,7 @@ public class MyTransform extends Transform{
                         if (!matched){
                             ScriptConfigVal.ConfigItem methodIncludeConfigItem = configVal.matchInclude(packageName, className, methodName);
                             if (methodIncludeConfigItem != null){
-                                //System.out.println("---脚本配置成功! 进行字节码修改, 类名="+className+", 方法名="+mnd.name);
+                                System.out.println("---脚本配置成功! 进行字节码修改, 类名="+className+", 方法名="+mnd.name);
                                 transformMethod(packageName, classNode, mnd, methodIncludeConfigItem.getMethodManipulateArg());
                             }
                         }

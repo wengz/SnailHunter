@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 
-apply plugin: 'pers.wengzc.snailhunter'
+//apply plugin: 'pers.wengzc.snailhunter'
 
 
 android {
@@ -45,18 +45,18 @@ dependencies {
     //implementation project(':testlib')
 }
 
-sh {
-    include = [
-            "{ 'justMainThread': true, 'timeConstraint':200 }",
-    ]
-
-//    exclude = [
-//            "{ 'classConstraint':'ExtendViewMethodSignature' }",
+//sh {
+//    include = [
+//            "{ 'justMainThread': true, 'timeConstraint':200 }",
 //    ]
-
-    //'packageConstraint':''
-    //'classConstraint':'ViewMethodSignature'
-    //'methodConstraint':'fun1'
-    //'justMainThread':
-    //'timeConstraint':500
-}
+//
+////    exclude = [
+////            "{ 'classConstraint':'ExtendViewMethodSignature' }",
+////    ]
+//
+//    //'packageConstraint':''
+//    //'classConstraint':'ViewMethodSignature'
+//    //'methodConstraint':'fun1'
+//    //'justMainThread':
+//    //'timeConstraint':500
+//}

@@ -33,7 +33,6 @@ public class ConnectServiceFuture implements Future<ISnailHunterService>, Servic
     }
 
     private synchronized ISnailHunterService doGet (Long timeoutMs) throws InterruptedException, TimeoutException {
-        Log.d("xxx", "synchronized ConnectServiceFuture doGet: ");
         if (mResultReceived){
             return mResult;
         }
@@ -54,7 +53,6 @@ public class ConnectServiceFuture implements Future<ISnailHunterService>, Servic
 
     @Override
     public synchronized void onServiceConnected(ComponentName componentName, IBinder iBinder) {
-        Log.d("xxx", "onServiceConnected: ");
         mResultReceived = true;
         mResult = ISnailHunterService.Stub.asInterface(iBinder);
         notifyAll();
@@ -62,7 +60,6 @@ public class ConnectServiceFuture implements Future<ISnailHunterService>, Servic
 
     @Override
     public synchronized void onServiceDisconnected(ComponentName componentName) {
-        Log.d("xxx", "onServiceDisconnected: ");
         mResultReceived = true;
         mResult = null;
         notifyAll();
@@ -70,7 +67,6 @@ public class ConnectServiceFuture implements Future<ISnailHunterService>, Servic
 
     @Override
     public void onNullBinding(ComponentName name) {
-        Log.d("xxx", "onNullBinding: ");
     }
 
     @Override
