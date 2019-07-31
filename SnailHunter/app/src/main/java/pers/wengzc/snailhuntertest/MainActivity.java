@@ -36,9 +36,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-
-                Log.d("xxx", "onClick: I'm alive");
-
+                wrapperMethod1();
             }
         });
 
@@ -46,9 +44,18 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View view) {
-                startLoopTest();
+
             }
         });
+    }
+
+    private void testFun (){
+        try{
+            Log.d("xxx", "testFun catch throw zzzzzzzzzzz");
+            throw new IllegalAccessException("zzzzzzzzzzzz");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
     private void startLoopTest (){
@@ -75,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("xxx", "timeMethod: "+now);
         return now;
     }
-
+    @HunterTarget(timeConstraint = 100)
     private void wrapperMethod1 (){
         longTimeWork();
     }

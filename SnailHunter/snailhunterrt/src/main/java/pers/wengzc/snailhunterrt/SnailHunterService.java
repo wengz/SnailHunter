@@ -34,21 +34,33 @@ import static android.os.Build.VERSION_CODES.JELLY_BEAN;
 
 public class SnailHunterService extends Service {
 
-    private List<Snail> mSnails = new CopyOnWriteArrayList<>();
+    private Object dataLock = new Object();
+
+    private static final int DATA_CAPACCITY_SIZE = 1000;
+
+    private List<Snail> mSnails = new LinkedList<>();
+
 
     private final RemoteCallbackList<ISnailWatcher> mSnailWatcher = new RemoteCallbackList<>();
 
     private void addNewSnail (Snail snail){
         snail.leafInvoke = true;
-        for (Snail sn : mSnails){
-            if (sn.leafInvoke){
-                if (snail.wrap(sn)){
-                    snail.leafInvoke = false;
-                    sn.leafInvoke = true;
+        synchronized (dataLock){
+            int size = mSnails.size();
+            if (size > DATA_CAPACCITY_SIZE){
+               mSnails.subList(size/2, size).clear();
+            }
+
+            for (Snail sn : mSnails){
+                if (sn.leafInvoke){
+                    if (snail.wrap(sn)){
+                        snail.leafInvoke = false;
+                        sn.leafInvoke = true;
+                    }
                 }
             }
+            mSnails.add(0, snail);
         }
-        mSnails.add(0, snail);
     }
 
     private ISnailHunterService.Stub mSnailHunterService = new ISnailHunterService.Stub() {
@@ -108,7 +120,9 @@ public class SnailHunterService extends Service {
 
         @Override
         public void clear() throws RemoteException {
-            mSnails.clear();
+            synchronized (dataLock){
+                mSnails.clear();
+            }
             notifySnailDataChanged(null);
         }
     };
