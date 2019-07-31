@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>pers.wengzc</groupId>
   <artifactId>snailhunterrt</artifactId>
-  <version>0.0.69</version>
+  <version>0.0.77</version>
   <packaging>aar</packaging>
   <dependencies>
     <dependency>
