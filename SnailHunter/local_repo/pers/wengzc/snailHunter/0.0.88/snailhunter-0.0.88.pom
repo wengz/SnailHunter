@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>pers.wengzc</groupId>
   <artifactId>snailhunter</artifactId>
-  <version>0.0.85</version>
+  <version>0.0.88</version>
   <dependencies>
     <dependency>
       <groupId>com.android.tools.build</groupId>

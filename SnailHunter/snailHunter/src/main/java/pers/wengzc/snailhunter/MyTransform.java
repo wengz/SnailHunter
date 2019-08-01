@@ -111,22 +111,27 @@ public class MyTransform extends Transform{
             List<CtClass> box = ConvertUtil.toCtClasses(inputs, classPool);
             AnnotationConfigHelper.cp = classPool;
             insertCode(box, jarFile);
-            AnnotationConfigHelper.releaseResource();
 
         }catch ( Exception e ){
             e.printStackTrace();
+        }finally {
+            AnnotationConfigHelper.releaseResource();
         }
     }
 
     private void insertCode (List<CtClass> box, File jarFile) throws Exception {
         ZipOutputStream outputStream = new JarOutputStream(new FileOutputStream(jarFile));
         for (CtClass ctClass : box){
-            ctClass.setModifiers(AccessFlag.setPublic(ctClass.getModifiers()));
             if (
                 isNeedInsertClass(ctClass.getName())
                 &&
                 !( ctClass.isInterface() || ctClass.getDeclaredMethods().length < 1 )
             ){
+                if (ctClass.isFrozen()) {
+                    ctClass.defrost();
+                }
+                //ctClass.setModifiers(AccessFlag.setPublic(ctClass.getModifiers()));
+                System.out.println("insertCode: "+ctClass.getName());
                 zipFile(transformCode(ctClass.toBytecode(), ctClass.getName()), outputStream, ctClass.getName().replaceAll("\\.", "/") + ".class");
             }else{
                 zipFile(ctClass.toBytecode(), outputStream, ctClass.getName().replaceAll("\\.", "/") + ".class");
@@ -140,8 +145,8 @@ public class MyTransform extends Transform{
             || className.startsWith("pers.wengzc.hunterkit")
             || className.startsWith("android")
             || className.startsWith("androidx")
-            /*|| className.startsWith("java")
-            || className.startsWith("javax")*/){
+            || className.startsWith("java")
+            || className.startsWith("javax")){
             return false;
         }
         return true;
