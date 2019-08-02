@@ -46,6 +46,7 @@ import javassist.bytecode.AccessFlag;
 import pers.wengzc.hunterkit.Action;
 import pers.wengzc.hunterkit.AndroidUtil;
 import pers.wengzc.hunterkit.ByteCodeBridge;
+import pers.wengzc.hunterkit.HunterTarget;
 
 public class MyTransform extends Transform{
 
@@ -97,7 +98,7 @@ public class MyTransform extends Transform{
                 jarFile.delete();
             }
 
-            ClassPool classPool = new ClassPool();
+            ClassPool classPool = ClassPool.getDefault();
             BaseExtension androidExtension = (BaseExtension) project.getExtensions().getByName("android");
             List<File> bootClassPath = androidExtension.getBootClasspath();
             for (File file : bootClassPath){
@@ -120,6 +121,11 @@ public class MyTransform extends Transform{
     }
 
     private void insertCode (List<CtClass> box, File jarFile) throws Exception {
+        Class hunterTargaetClz = HunterTarget.class;
+        System.out.println(">>>hunterTargaetClz="+hunterTargaetClz);
+
+        Thread.sleep(5000);
+
         ZipOutputStream outputStream = new JarOutputStream(new FileOutputStream(jarFile));
         for (CtClass ctClass : box){
             if (

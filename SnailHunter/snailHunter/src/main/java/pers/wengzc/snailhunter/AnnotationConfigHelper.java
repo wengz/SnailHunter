@@ -55,7 +55,26 @@ public class AnnotationConfigHelper {
             CtMethod[] ctMethods = ctClass.getDeclaredMethods();
             if (ctMethods != null){
                 for (CtMethod method : ctMethods){
+
+                    System.out.println(">>>1111111111111111111111");
+
+                    Class hunterTargaetClz = HunterTarget.class;
+                    System.out.println(">>>hunterTargaetClz="+hunterTargaetClz);
+
+
+                    CtClass htCtClass = cp.get("pers.wengzc.hunterkit.HunterTarget");
+                    System.out.println(">>>htCtClass"+htCtClass);
+
+                    Class forNameClass = Class.forName("pers.wengzc.hunterkit.HunterTarget");
+                    System.out.println(">>>forNameClass="+forNameClass);
+
+                    Class htClass = cp.getClassLoader().loadClass("pers.wengzc.hunterkit.HunterTarget");
+                    System.out.println("zzzzzzz");
+                    System.out.println(">>>htClass="+htClass);
+
                     HunterTarget ma = (HunterTarget) method.getAnnotation(HunterTarget.class);
+                    System.out.println(">>>ma="+ma);
+                    System.out.println(">>>22222222222222");
                     if (ma != null){
                         String methodName = method.getName();
                         String description = method.getSignature();
