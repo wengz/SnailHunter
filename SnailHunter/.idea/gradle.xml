@@ -12,6 +12,7 @@
             <option value="$PROJECT_DIR$/hunterkit" />
             <option value="$PROJECT_DIR$/snailhunter" />
             <option value="$PROJECT_DIR$/snailhunterrt" />
+            <option value="$PROJECT_DIR$/snailhunterrt_noop" />
             <option value="$PROJECT_DIR$/testlib" />
           </set>
         </option>

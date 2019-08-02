@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d("xxx", "timeMethod: "+now);
         return now;
     }
+
     @HunterTarget(timeConstraint = 100)
     private void wrapperMethod1 (){
         longTimeWork();

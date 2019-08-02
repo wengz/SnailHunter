@@ -1,1 +1,1 @@
-include ':app', ':snailhunter', ':hunterkit', ':testlib', ':snailhunterrt'
+include ':app', ':snailhunter', ':hunterkit', ':testlib', ':snailhunterrt', 'snailhunterrt_noop'
