@@ -27,12 +27,6 @@ android {
 }
 
 
-repositories {
-    maven{
-        url uri('C:/local_repo')
-    }
-}
-
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:28.0.0'
@@ -41,9 +35,9 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'org.apache.commons:commons-lang3:3.9'
-    debugImplementation 'pers.wengzc:snailhunterrt:0.0.77'
-    testImplementation 'pers.wengzc:snailhunterrt_noop:0.0.77'
-    releaseImplementation 'pers.wengzc:snailhunterrt_noop:0.0.77'
+    debugImplementation 'pers.wengzc:snailhunterrt:0.0.2-SNAPSHOT'
+    testImplementation 'pers.wengzc:snailhunterrt_noop:0.0.2-SNAPSHOT'
+    releaseImplementation 'pers.wengzc:snailhunterrt_noop:0.0.2-SNAPSHOT'
     //implementation project(':testlib')
 }
 
@@ -60,18 +54,18 @@ configurations {
     }
 }
 
-//sh {
+sh {
 //    include = [
-//            "{ 'justMainThread': true, 'timeConstraint':200 }",
+//            "{ 'justMainThread': true, 'timeConstraint':500 }",
 //    ]
-//
-////    exclude = [
-////            "{ 'classConstraint':'ExtendViewMethodSignature' }",
-////    ]
-//
-//    //'packageConstraint':''
-//    //'classConstraint':'ViewMethodSignature'
-//    //'methodConstraint':'fun1'
-//    //'justMainThread':
-//    //'timeConstraint':500
-//}
+
+//    exclude = [
+//            "{ 'classConstraint':'ExtendViewMethodSignature' }",
+//    ]
+
+    //'packageConstraint':''
+    //'classConstraint':'ViewMethodSignature'
+    //'methodConstraint':'fun1'
+    //'justMainThread':
+    //'timeConstraint':500
+}

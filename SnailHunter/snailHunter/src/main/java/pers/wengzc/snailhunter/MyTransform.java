@@ -110,7 +110,6 @@ public class MyTransform extends Transform{
             }
 
             List<CtClass> box = ConvertUtil.toCtClasses(inputs, classPool);
-            AnnotationConfigHelper.cp = classPool;
             insertCode(box, jarFile);
 
         }catch ( Exception e ){
@@ -121,11 +120,6 @@ public class MyTransform extends Transform{
     }
 
     private void insertCode (List<CtClass> box, File jarFile) throws Exception {
-        Class hunterTargaetClz = HunterTarget.class;
-        System.out.println(">>>hunterTargaetClz="+hunterTargaetClz);
-
-        Thread.sleep(5000);
-
         ZipOutputStream outputStream = new JarOutputStream(new FileOutputStream(jarFile));
         for (CtClass ctClass : box){
             if (
@@ -136,8 +130,6 @@ public class MyTransform extends Transform{
                 if (ctClass.isFrozen()) {
                     ctClass.defrost();
                 }
-                //ctClass.setModifiers(AccessFlag.setPublic(ctClass.getModifiers()));
-                System.out.println("insertCode: "+ctClass.getName());
                 zipFile(transformCode(ctClass.toBytecode(), ctClass.getName()), outputStream, ctClass.getName().replaceAll("\\.", "/") + ".class");
             }else{
                 zipFile(ctClass.toBytecode(), outputStream, ctClass.getName().replaceAll("\\.", "/") + ".class");
@@ -193,7 +185,7 @@ public class MyTransform extends Transform{
                         for (MethodConfig mc : classMethodConfig){
                             if (mc.match(mnd)){
                                 if (mc.config.action == Action.Include){
-                                    System.out.println("---注解匹配成功! 进行字节码修改, 类名="+className+", 方法名="+mnd.name);
+                                    System.out.println("---注解匹配成功! 进行字节码注入, 类名="+className+", 方法名="+mnd.name);
                                     transformMethod(packageName, classNode, mnd, mc.getMethodManipulateArg());
                                 }
                                 matched = true;
@@ -205,7 +197,7 @@ public class MyTransform extends Transform{
                         if (!matched){
                             ScriptConfigVal.ConfigItem methodIncludeConfigItem = configVal.matchInclude(packageName, className, methodName);
                             if (methodIncludeConfigItem != null){
-                                System.out.println("---脚本配置成功! 进行字节码修改, 类名="+className+", 方法名="+mnd.name);
+                                System.out.println("---脚本配置成功! 进行字节码注入, 类名="+className+", 方法名="+mnd.name);
                                 transformMethod(packageName, classNode, mnd, methodIncludeConfigItem.getMethodManipulateArg());
                             }
                         }
@@ -275,7 +267,6 @@ public class MyTransform extends Transform{
                     "()J", false));
             codeInsertEnd.add(new LdcInsnNode(new Boolean(manipulateArg.justMainThread)));
             codeInsertEnd.add(new LdcInsnNode(new Long(manipulateArg.timeConstraint)));
-            //codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, wriggleInfoInternalName, "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;ZJJ)V", false));
             codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
                     byteCodeBrudgeInternalName,
                     "handle",

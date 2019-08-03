@@ -97,7 +97,7 @@ public class SnailHunter {
                                             isMainThread,
                                             mainThreadConstraint,
                                             timeConstraint);
-                                    Log.d(Constant.TAG, "开始远程服务调用，报告函数信息");
+                                    //Log.d(Constant.TAG, "开始远程服务调用，报告函数信息");
                                     snailHunterService.catchNewSnail(rtSnail);
                                 } catch (Exception e) {
                                     e.printStackTrace();

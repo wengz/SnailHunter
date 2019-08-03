@@ -83,7 +83,7 @@ public class ScriptConfigVal {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("----ScriptConfig----\n");
+        sb.append("\n----SnailHunter ScriptConfig----\n");
         sb.append("----includeConfig\n");
         if (includeConfig != null){
             for (ConfigItem it : includeConfig){
@@ -96,6 +96,7 @@ public class ScriptConfigVal {
                 sb.append(it.toString()+"\n");
             }
         }
+        sb.append("\n");
         return sb.toString();
     }
 
