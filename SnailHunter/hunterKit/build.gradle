@@ -27,7 +27,7 @@ uploadArchives {
 
 
             pom.project {
-                version "0.0.1-SNAPSHOT"
+                version "0.0.11-SNAPSHOT"
                 groupId "pers.wengzc"
                 artifactId "hunterkit"
                 packaging "jar"

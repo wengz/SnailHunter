@@ -69,16 +69,6 @@ public class SnailHunter {
                                                 final boolean isMainThread,
                                                 final boolean mainThreadConstraint,
                                                 final long timeConstraint) {
-                //只检查主线程，非主线程运行状态不捕捉
-                if (mainThreadConstraint && !isMainThread) {
-                    return;
-                }
-
-                //时间约束
-                long costTime = finishTime - startTime;
-                if (costTime < timeConstraint * 1000000) {
-                    return;
-                }
 
                 try{
                     executorService.submit(new Runnable() {

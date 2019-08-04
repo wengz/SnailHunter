@@ -220,6 +220,9 @@ public class MyTransform extends Transform{
     private void transformMethod (String packageName, ClassNode cn, MethodNode mnd, MethodManipulateArg manipulateArg) {
 
         int orgLocalVarSize = mnd.maxLocals;
+        int startTimeLocalVarIndex = orgLocalVarSize;
+        int finishTimeLocalVarIndex = orgLocalVarSize+2;
+
         String methodName = mnd.name;
         String className = cn.name;
         className = className.replace("/", ".");
@@ -235,7 +238,7 @@ public class MyTransform extends Transform{
                 "java/lang/System",
                 "nanoTime",
                 "()J", false));
-        codeInsertStart.add(new VarInsnNode(Opcodes.LSTORE, orgLocalVarSize));
+        codeInsertStart.add(new VarInsnNode(Opcodes.LSTORE, startTimeLocalVarIndex));
 
         List<AbstractInsnNode> finishInsn = new ArrayList<AbstractInsnNode>();
         Iterator<AbstractInsnNode> insnIt = insnList.iterator();
@@ -253,24 +256,39 @@ public class MyTransform extends Transform{
             AbstractInsnNode insn = finishInsnIt.next();
 
             InsnList codeInsertEnd = new InsnList();
+            LabelNode end = new LabelNode();
 
-            String byteCodeBrudgeInternalName = Type.getInternalName(ByteCodeBridge.class);
-            codeInsertEnd.add(new LdcInsnNode(packageName));
-            codeInsertEnd.add(new LdcInsnNode(className));
-            codeInsertEnd.add(new LdcInsnNode(methodName));
-            //开始时间
-            codeInsertEnd.add(new VarInsnNode(Opcodes.LLOAD, orgLocalVarSize));
+            String byteCodeBridgeInternalName = Type.getInternalName(ByteCodeBridge.class);
+
             //结束时间
             codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
                     "java/lang/System",
                     "nanoTime",
                     "()J", false));
+            codeInsertEnd.add(new VarInsnNode(Opcodes.LSTORE, finishTimeLocalVarIndex));
+            codeInsertEnd.add(new VarInsnNode(Opcodes.LLOAD, finishTimeLocalVarIndex));
+            //开始时间
+            codeInsertEnd.add(new VarInsnNode(Opcodes.LLOAD, startTimeLocalVarIndex));
+            codeInsertEnd.add(new InsnNode(Opcodes.LSUB));
+            codeInsertEnd.add(new LdcInsnNode(new Long(manipulateArg.timeConstraint * 1000000)));
+            codeInsertEnd.add(new InsnNode(Opcodes.LCMP));
+            codeInsertEnd.add(new JumpInsnNode(Opcodes.IFLE, end));
+
+            codeInsertEnd.add(new LdcInsnNode(packageName));
+            codeInsertEnd.add(new LdcInsnNode(className));
+            codeInsertEnd.add(new LdcInsnNode(methodName));
+
+            codeInsertEnd.add(new VarInsnNode(Opcodes.LLOAD, startTimeLocalVarIndex));
+            codeInsertEnd.add(new VarInsnNode(Opcodes.LLOAD, finishTimeLocalVarIndex));
+
             codeInsertEnd.add(new LdcInsnNode(new Boolean(manipulateArg.justMainThread)));
             codeInsertEnd.add(new LdcInsnNode(new Long(manipulateArg.timeConstraint)));
+
             codeInsertEnd.add(new MethodInsnNode(Opcodes.INVOKESTATIC,
-                    byteCodeBrudgeInternalName,
+                    byteCodeBridgeInternalName,
                     "handle",
                     "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;JJZJ)V", false));
+            codeInsertEnd.add(end);
 
             insnList.insertBefore(insn, codeInsertEnd);
         }
