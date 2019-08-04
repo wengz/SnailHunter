@@ -36,12 +36,24 @@ public class MethodConfig {
 
     public static class Config {
 
+        /**
+         * 是否只检测主线程
+         */
         boolean justMainThread;
 
+        /**
+         * 时间限制
+         */
         long timeConstraint;
 
+        /**
+         * 是否可继承
+         */
         boolean inherited;
 
+        /**
+         * 配置动作
+         */
         public Action action;
 
     }

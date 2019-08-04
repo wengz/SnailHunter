@@ -71,7 +71,7 @@ public class DisplayAdapter extends RecyclerView.Adapter<DisplayAdapter.DisplayV
             sb.append(elementToHtmlString(fontColor,"方法名:"+snail.methodName));
             sb.append(elementToHtmlString(fontColor,"是否主线程:"+snail.isMainThread));
             sb.append(elementToHtmlString(fontColor,"时间限制(ms):"+snail.timeConstraint));
-            sb.append(elementToHtmlString(fontColor,"实际运行时间(ms):"+(snail.executeTime/1000000)));
+            sb.append(elementToHtmlString(fontColor,"实际运行时间(ms):"+(snail.executeTime/1000000f)));
             mTextView.setText(Html.fromHtml(sb.toString()));
         }
 

@@ -23,16 +23,14 @@ public class ByteCodeBridge {
                               ){
         if (sMethodInfoHandler != null){
 
-            //时间约束
+            //时间约束已经在注入的字节码中判定
 //            long costTime = finishTime - startTime;
 //            if (costTime < timeConstraint * 1000000) {
 //                return;
 //            }
 
-            Log.d(TAG, "handle: startTime="+(startTime/1000000f)+" finishTime="+(finishTime/1000000f));
-
-            boolean isMainThread = AndroidUtil.isInUIThread();
-            //只检查主线程，非主线程运行状态不捕捉
+            //线程判定在此处处理,注入的字节码中不应该做过多的操作
+            boolean isMainThread = AndroidUtil.isInUIThread();;
             if (mainThreadConstraint && !isMainThread) {
                 return;
             }

@@ -16,17 +16,27 @@ public class Snail  implements Parcelable{
     public String packageName;
     public String className;
     public String methodName;
-    //函数开始时间（纳秒）
+    /**
+     * 函数开始时间（纳秒）
+     */
     public long startTime;
-    //函数结束时间（纳秒）
+    /**
+     * 函数结束时间（纳秒）
+     */
     public long finishTime;
     public boolean isMainThread;
     public boolean mainThreadConstraint;
-    //运行时间约束(毫秒)
+    /**
+     * 运行时间约束(毫秒)
+     */
     public long timeConstraint;
-    //实际运行时间(纳秒)
+    /**
+     * 实际运行时间(纳秒)
+     */
     public long executeTime;
-    //栈尾调用
+    /**
+     * 是否为栈尾调用
+     */
     public boolean leafInvoke;
 
     public boolean wrap (Snail other){

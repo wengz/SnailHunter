@@ -13,24 +13,24 @@ import pers.wengzc.hunterkit.HunterTarget;
 
 public class AnnotationConfigHelper {
 
-    public static Map<String, List<MethodConfig>[]> classMethodConfig = new HashMap<>();
+    public static Map<String, List<MethodConfig>[]> sClassMethodConfig = new HashMap<>();
 
     public static void releaseResource (){
-        classMethodConfig.clear();
+        sClassMethodConfig.clear();
     }
 
     public static List<MethodConfig> getClassSelfMethodConfig (String className){
-        if (!classMethodConfig.containsKey(className)){
+        if (!sClassMethodConfig.containsKey(className)){
             initClassMethodConfig(className);
         }
-        return classMethodConfig.get(className)[0];
+        return sClassMethodConfig.get(className)[0];
     }
 
     public static List<MethodConfig> getClassInheritMethodConfig (String className){
-        if (!classMethodConfig.containsKey(className)){
+        if (!sClassMethodConfig.containsKey(className)){
             initClassMethodConfig(className);
         }
-        return classMethodConfig.get(className)[1];
+        return sClassMethodConfig.get(className)[1];
     }
 
     public static String getClassPackageName (String className){
@@ -164,7 +164,7 @@ public class AnnotationConfigHelper {
             List<MethodConfig>[] val = new ArrayList[2];
             val[0] = selfConfig;
             val[1] = inheritConifg;
-            classMethodConfig.put(className, val);
+            sClassMethodConfig.put(className, val);
 
         }catch (Exception e){
             e.printStackTrace();

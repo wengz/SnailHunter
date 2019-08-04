@@ -31,7 +31,7 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.google.guava:guava:28.0-android'
-    implementation "pers.wengzc:hunterkit:0.0.11-SNAPSHOT"
+    implementation "pers.wengzc:hunterkit:0.0.18-SNAPSHOT"
 }
 
 uploadArchives {
@@ -51,7 +51,7 @@ uploadArchives {
 //            }
 
             pom.project {
-                version "0.0.11-SNAPSHOT"
+                version "0.0.18-SNAPSHOT"
                 groupId "pers.wengzc"
                 artifactId "snailhunterrt"
                 packaging "aar"

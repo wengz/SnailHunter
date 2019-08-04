@@ -1,6 +1,5 @@
 package pers.wengzc.snailhunter;
 
-
 import com.android.build.gradle.BaseExtension;
 
 import org.gradle.api.Plugin;

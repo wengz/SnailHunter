@@ -1,6 +1,5 @@
 package pers.wengzc.snailhunter;
 
-
 import com.alibaba.fastjson.JSON;
 
 import java.util.ArrayList;
@@ -67,6 +66,7 @@ public class ScriptConfigVal {
                 if (!includeStr.contains("timeConstraint")){
                     configItem.timeConstraint = -1;
                 }
+                configItem.preCompile();
                 includeConfig.add(configItem);
             }
         }
@@ -75,6 +75,7 @@ public class ScriptConfigVal {
             excludeConfig = new ArrayList<>();
             for (String exclueStr : exclude){
                 ConfigItem configItem = JSON.parseObject(exclueStr, ConfigItem.class);
+                configItem.preCompile();
                 excludeConfig.add(configItem);
             }
         }
@@ -104,8 +105,8 @@ public class ScriptConfigVal {
 
         @Override
         public String toString() {
-            return "packageConstraint="+packageConstraint+
-                    " classConstraint="+classConstraint+
+            return "packageConstraint="+ packageConstraint +
+                    " classConstraint="+ classConstraint +
                     " methodConstraint="+methodConstraint+
                     " timeConstraint="+timeConstraint+
                     " justMainThread="+ justMainThread;
@@ -118,27 +119,68 @@ public class ScriptConfigVal {
             className = className == null ? "" : className;
             methodName = methodName == null ? "" : methodName;
 
-            if (packageConstraint != null && packageConstraint.length() > 0 && !Pattern.compile(packageConstraint).matcher(packageName).matches()){
+            if (packageConstraintPattern != null && !packageConstraintPattern.matcher(packageName).matches()){
                 return false;
             }
-            if (classConstraint != null && classConstraint.length() > 0 && !Pattern.compile(classConstraint).matcher(className).matches()){
+            if (classConstraintPattern != null && !classConstraintPattern.matcher(className).matches()){
                 return false;
             }
-            if (methodConstraint != null && methodConstraint.length() > 0 && !Pattern.compile(methodConstraint).matcher(methodName).matches()){
+            if (methodConstraintPattern != null && !methodConstraintPattern.matcher(methodName).matches()){
                 return false;
             }
             return true;
         }
 
+        private boolean isEmpty (String str){
+            if (str == null || str.length() == 0){
+                return true;
+            }
+            return false;
+        }
+
+        private void preCompile (){
+
+            if (!isEmpty(packageConstraint)){
+                packageConstraintPattern = Pattern.compile(packageConstraint);
+            }
+
+            if(!isEmpty(classConstraint)){
+                classConstraintPattern = Pattern.compile(classConstraint);
+            }
+
+            if (!isEmpty(methodConstraint)){
+                methodConstraintPattern = Pattern.compile(methodConstraint);
+            }
+        }
+
+        /**
+         * 包名约束
+         */
         public String packageConstraint;
+        public Pattern packageConstraintPattern;
 
-        //仅类名，不包含包前缀
+        /**
+         * 类名约束
+         *
+         * <br/>(仅类名，不包含包前缀)
+         */
         public String classConstraint;
+        public Pattern classConstraintPattern;
 
+        /**
+         * 方法名约束
+         */
         public String methodConstraint;
+        public Pattern methodConstraintPattern;
 
+        /**
+         * 仅主线程检测
+         */
         public boolean justMainThread;
 
+        /**
+         * 时间限制(ms)
+         */
         public long timeConstraint;
 
         public String getPackageConstraint() {

@@ -66,8 +66,6 @@ public class SnailHunterService extends Service {
     private ISnailHunterService.Stub mSnailHunterService = new ISnailHunterService.Stub() {
         @Override
         public void catchNewSnail(Snail snail)  {
-            //Log.d(Constant.TAG, "服务端函数信息处理");
-
             //只检查主线程，非主线程运行状态不捕捉
             if (snail.mainThreadConstraint && !snail.isMainThread ){
                 return;
